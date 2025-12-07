@@ -23,20 +23,26 @@ COPY config/supervisord.conf /etc/supervisord.conf
 # Install PHP8-LDAP module
 RUN apk update && apk add php-ldap wget tzdata
 
+# Install Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
 # Switch to use a non-root user from here on
 USER nobody
 
 # Add application
-WORKDIR /var/app
+WORKDIR /var/www/html
 
-COPY --chown=nobody /src /var/app/
-RUN mkdir -p /var/app/writable/cache
+COPY --chown=nobody /src /var/www/html/
+RUN mkdir -p /var/www/html/writable/cache
+
+# Install Laravel dependencies
+RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
 # Expose the port nginx is reachable on
-EXPOSE 8080
+EXPOSE 8000
 
 # Let supervisord start nginx & php-fpm
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
 
 # Configure a healthcheck to validate that everything is up&running
-HEALTHCHECK --timeout=10s CMD curl --silent --fail http://127.0.0.1:8080/fpm-ping
+HEALTHCHECK --timeout=10s CMD curl --silent --fail http://127.0.0.1:8000/fpm-ping
