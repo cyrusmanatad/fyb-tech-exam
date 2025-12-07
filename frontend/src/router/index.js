@@ -1,10 +1,9 @@
 import { createRouter, createWebHistory } from "vue-router";
+import { useAuthStore } from '@/stores/auth';
 import HomeView from "../views/HomeView.vue";
-import JobsView from "../views/JobsView.vue";
-import NotFoundView from "../views/NotFoundView.vue";
-import JobView from "../views/JobView.vue";
-import AddJobView from "../views/AddJobView.vue";
-import EditJobView from "../views/EditJobView.vue";
+import RegisterView from "../views/RegisterView.vue";
+import LoginView from "../views/LoginView.vue";
+import ProductsView from "../views/ProductsView.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -15,31 +14,46 @@ const router = createRouter({
             component: HomeView
         },
         {
-            path: '/jobs',
-            name: 'jobs',
-            component: JobsView
+            path: '/products',
+            name: 'products',
+            component: ProductsView,
+            meta: { requiresAuth: true }
         },
         {
-            path: '/jobs/:id',
-            name: 'view-job',
-            component: JobView
+            path: '/login',
+            name: 'login',
+            component: LoginView
         },
         {
-            path: '/jobs/add',
-            name: 'add-job',
-            component: AddJobView
-        },
-        {
-            path: '/jobs/edit/:id',
-            name: 'edit-job',
-            component: EditJobView
-        },
-        {
-            path: '/:catchAll(.*)',
-            name: 'not-found',
-            component: NotFoundView
+            path: '/register',
+            name: 'register',
+            component: RegisterView
         }
     ]
 });
+
+router.beforeEach(async (to, from, next) => {
+    const auth = useAuthStore();
+
+    //
+    if(auth.user === null) {
+        try {
+            await auth.fetchUser();
+        } catch {
+            auth.user = null;
+        }
+    }
+
+    if(to.meta.requiresAuth && !auth.user) {
+        return next({ name: 'login' });
+    }
+
+    // If already logged in and trying to access login/register -> redirect home
+    if ((to.name === 'login' || to.name === 'register') && auth.user) {
+        return next({ name: 'home' });
+    }
+
+    next();
+})
 
 export default router;

@@ -14,9 +14,22 @@ class ProductController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json($this->productService->getAll());
+        $query = Product::with('user')->orderByDesc('created_at');
+
+        if ($request->has('search') && !empty($request->search)) {
+            $search = $request->search;
+
+            // Adjust the fields you want to search in
+            $query->where(function ($q) use ($search) {
+                $q->where('sku_code', 'like', "%{$search}%")
+                ->orWhere('sku_desc', 'like', "%{$search}%")
+                ->orWhere('sku_uom', 'like', "%{$search}%");
+            });
+        }
+
+        return $query->paginate(5);
     }
 
     /**

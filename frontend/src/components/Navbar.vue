@@ -1,66 +1,100 @@
 <script setup>
-import { RouterLink, useRoute } from "vue-router";
-import Logo from "../assets/vue.svg";
-import { ref } from "vue";
+import { useAuthStore } from "@/stores/auth";
+import { onMounted, ref, watch } from "vue";
+import { RouterLink, useRouter } from "vue-router";
+import PulseLoader from "vue-spinner/src/PulseLoader.vue";
 
-const menus = ref([
-  {
-    title: "Home",
-    url: "/",
-  },
-  {
-    title: "Jobs",
-    url: "/jobs",
-  },
-  {
-    title: "Add Job",
-    url: "/jobs/add",
-  },
-]);
+const auth = useAuthStore();
+const router = useRouter();
 
-const isActiveLink = (routePath) => {
-  const route = useRoute();
-  return route.path === routePath;
+const onlogout = ref(false);
+
+onMounted(() => {
+  auth.loading = true;
+
+  watch(
+    [() => auth.user, () => auth.status],
+    ([user, status]) => {
+      if (user !== undefined || status !== null) {
+        auth.loading = false
+      }
+    },
+    { immediate: true }
+  )
+});
+
+const logout = async () => {
+  onlogout.value = true;
+  const success = await auth.logout();
+  onlogout.value = false;
+
+  if (success) {
+    router.push({ name: "login" });
+  }
 };
 </script>
 
 <template>
-  <nav class="border-b border-green-500 bg-green-700">
-    <div class="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
-      <div class="flex h-20 items-center justify-between">
-        <div
-          class="flex flex-1 items-center justify-center md:items-stretch md:justify-start"
-        >
-          <!-- Logo -->
-          <RouterLink class="mr-4 flex flex-shrink-0 items-center" to="/">
-            <img class="h-10 w-auto" :src="Logo" alt="Vue Jobs" />
-            <span class="ml-2 hidden text-2xl font-bold text-white md:block"
-              >Vue Jobs</span
-            >
+  <header class="sticky top-0 z-50 bg-white shadow-sm">
+    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+      <div class="flex h-16 items-center justify-between">
+        <div class="shrink-0">
+          <a href="/" class="text-2xl font-bold text-blue-600"> Product Management </a>
+        </div>
+        <nav class="hidden md:flex md:space-x-8">
+          <RouterLink
+            to="/"
+            class="px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700"
+          >
+            Home
           </RouterLink>
-          <div class="md:ml-auto">
-            <div class="flex space-x-2">
-              <RouterLink
-                v-for="menu in menus"
-                :key="menu.url"
-                :to="menu.url"
-                :class="[
-                  isActiveLink(menu.url) ? 'bg-green-900' : '',
-                  'rounded-md',
-                  'px-3',
-                  'py-2',
-                  'text-white',
-                  'hover:bg-gray-900',
-                  'hover:text-white',
-                ]"
-                >{{ menu.title }}</RouterLink
-              >
-            </div>
+          <RouterLink
+            to="/products"
+            class="px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700"
+          >
+            Products
+          </RouterLink>
+        </nav>
+        <div class="flex items-center">
+          <div>
+            <p>
+              <span
+                v-if="auth.loading"
+                class="inline-block mt-1.5 h-4 w-32 rounded-md bg-gray-200 shadow-sm animate-pulse"
+              ></span>
+              <span v-else-if="auth.user !== null" class="text-sm font-medium text-gray-700">
+                Hello, {{ auth.user.name }}
+              </span>
+            </p>
           </div>
+          <div
+            v-if="auth.loading"
+            class="ml-8 inline-flex h-9 w-20 items-center justify-center rounded-md bg-gray-200 shadow-sm animate-pulse"
+          ></div>
+          <RouterLink
+            to="login"
+            v-else-if="auth.user === null"
+            class="ml-8 inline-flex items-center justify-center rounded-md border border-transparent bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 hover:cursor-pointer"
+          >
+            Sign In
+          </RouterLink>
+          <button
+            v-else
+            @click="logout"
+            class="ml-8 inline-flex items-center justify-center rounded-md border border-transparent bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-red-700 hover:cursor-pointer"
+          >
+            Logout
+            <PulseLoader
+              v-show="onlogout"
+              class="ml-2"
+              size="8px"
+              color="white"
+            />
+          </button>
         </div>
       </div>
     </div>
-  </nav>
+  </header>
 </template>
 
 <style scoped></style>
