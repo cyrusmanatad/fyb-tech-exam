@@ -19,15 +19,6 @@ RUN npm run build
 # Production stage
 FROM nginx:alpine AS production
 
-# Copy built assets from build stage
-# COPY --from=build /app/dist /app
-
-# Copy nginx configuration
-# COPY nginx.conf /etc/nginx/conf.d/default.conf
-
-# Expose port 80
-# EXPOSE 80
-
 RUN mkdir /app
 
 COPY nginx.conf /etc/nginx/conf.d/default.conf

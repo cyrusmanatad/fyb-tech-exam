@@ -34,15 +34,25 @@ echo ""
 echo "Checking container status..."
 docker-compose ps
 
+# Install Laravel dependencies
+echo ""
+echo "[6/7] Installing laravel dependencies..."
+docker-compose exec backend composer install
+
+# Generate Key
+echo ""
+echo "[7/7] Generating laravel key..."
+docker-compose exec backend php artisan key:generate
+
 # Run database migrations
 echo ""
-echo "[6/7] Running database migrations..."
+echo "[8/7] Running database migrations..."
 docker-compose exec backend php artisan migrate --force
 
 # Generate JWT Secret Key
 echo ""
-echo "[7/7] Generating JWT secret key..."
-docker-compose exec backend php artisan jwt:secret
+echo "[9/7] Generating JWT secret key..."
+docker-compose exec backend php artisan jwt:secret --force
 
 echo ""
 echo "=========================================="
