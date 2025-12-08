@@ -10,7 +10,9 @@ services:
       - ./backend:/var/www/html
     ports:
       - "8000:8000"
-    command: php artisan serve --host=127.0.0.1 --port=8000
+    command: php artisan serve --host=0.0.0.0 --port=8000
+    networks:
+      - app-network
 
   frontend:
     build:
@@ -19,6 +21,18 @@ services:
     container_name: vue-frontend
     volumes:
       - ./frontend:/app
+      - /app/node_modules
     ports:
-      - "3001:5173"
-    command: npm run dev -- --host
+      - "3001:80"
+    # command: npm run dev -- --host 0.0.0.0
+    environment:
+      - VITE_API_URL=http://localhost:8000
+      - PORT=3001
+    stdin_open: true
+    tty: true
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

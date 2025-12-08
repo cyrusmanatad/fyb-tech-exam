@@ -10,11 +10,13 @@ export default defineConfig(({ mode }) => {
   return {
     plugins: [vue(), tailwindcss()],
     server: {
-      port: 3001,
+      host: '0.0.0.0',
+      port: env.PORT ? parseInt(env.PORT) : 3001,
       proxy: {
         "/api": {
-          target: env.VITE_API_URL || "http://localhost:8000", // ✅ Use IPv4 explicitly
+          target: env.VITE_API_URL || "http://localhost:8000",
           changeOrigin: true,
+          secure: false
           // rewrite: (path) => path.replace(/^\/api/, '')
         },
       },
