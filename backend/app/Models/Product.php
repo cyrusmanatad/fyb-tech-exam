@@ -12,12 +12,19 @@ class Product extends Model
         'user_id',
         'sku_code',
         'sku_desc',
+        'sku_desc_long',
         'sku_uom',
         'sku_price',
     ];
 
+    protected $appends = ['humanize_datetime'];
+
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function getHumanizeDatetimeAttribute(){
+        return $this->created_at ? $this->created_at->diffForHumans() : null;
     }
 }

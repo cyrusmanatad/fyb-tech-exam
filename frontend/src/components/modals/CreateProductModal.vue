@@ -1,5 +1,5 @@
 <script setup>
-import { defineEmits, reactive, ref } from 'vue';
+import { defineEmits, reactive, ref } from "vue";
 import axios from "@/axios"; // axios.js file
 import { useAuthStore } from "@/stores/auth";
 import PulseLoader from "vue-spinner/src/PulseLoader.vue";
@@ -7,14 +7,15 @@ import PulseLoader from "vue-spinner/src/PulseLoader.vue";
 const formData = reactive({
   user_id: null,
   sku_desc: null,
-  sku_code: '',
+  sku_desc_long: null,
+  sku_code: "",
   sku_price: 0,
-  sku_uom: '',
+  sku_uom: "",
 });
 
 const creating = ref(false);
 
-const emit = defineEmits(['close', 'created']);
+const emit = defineEmits(["close", "created"]);
 
 const handleCreate = async () => {
   const auth = useAuthStore();
@@ -22,18 +23,15 @@ const handleCreate = async () => {
   formData.user_id = auth.user.id;
 
   creating.value = !creating.value;
-  
+
   try {
     const { data } = await axios.post(`/api/products`, {
+      ...formData,
       user_id: auth.user.id,
-      sku_desc: formData.sku_desc,
-      sku_code: formData.sku_code,
-      sku_price: formData.sku_price,
-      sku_uom: formData.sku_uom
     });
 
     // Optionally update the auth store or notify success
-    emit('created');
+    emit("created");
     console.log("Product created successfully", data);
   } catch (error) {
     console.error("Failed to create product", error);
@@ -44,34 +42,36 @@ const handleCreate = async () => {
 };
 
 const closeModal = () => {
-  emit('close');
+  emit("close");
 };
 </script>
 
 <template>
   <div
-    class="fixed inset-0 h-full bg-black/50 z-50 flex justify-center items-center p-4"
+    class="fixed inset-0 z-50 flex h-full items-center justify-center bg-black/50 p-4"
   >
     <div
-      class="bg-white rounded-lg shadow-xl w-full max-w-3xl max-h-[90vh] flex flex-col"
+      class="flex max-h-[90vh] w-full max-w-3xl flex-col rounded-lg bg-white shadow-xl"
     >
       <div
-        class="p-6 border-b border-gray-200 flex justify-between items-center"
+        class="flex items-center justify-between border-b border-gray-200 p-6"
       >
         <div>
-          <h2 class="text-2xl font-bold text-gray-900">{{ formData.sku_desc || '----' }}</h2>
+          <h2 class="text-2xl font-bold text-gray-900">
+            {{ formData.sku_desc || "----" }}
+          </h2>
           <p class="text-md text-gray-600">Please fill out the form.</p>
         </div>
         <button
           @click="closeModal"
-          class="p-2 rounded-full text-gray-400 hover:bg-gray-100 hover:text-gray-600"
+          class="rounded-full p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600"
         >
           <i class="pi pi-times"></i>
         </button>
       </div>
 
       <form class="space-y-6" v-on:submit.prevent="handleCreate">
-        <div class="p-6 overflow-y-auto">
+        <div class="overflow-y-auto p-6">
           <div>
             <label
               htmlFor="name"
@@ -122,6 +122,7 @@ const closeModal = () => {
                 id="description"
                 name="description"
                 type="text"
+                v-model="formData.sku_desc_long"
                 autoComplete="current-description"
                 class="block w-full appearance-none rounded-md border px-3 py-2 placeholder-gray-400 shadow-sm focus:outline-none sm:text-sm"
               />
@@ -170,26 +171,31 @@ const closeModal = () => {
         </div>
 
         <div
-          class="p-6 border-t border-gray-200 bg-gray-50 rounded-b-lg flex justify-end space-x-3"
+          class="flex justify-end space-x-3 rounded-b-lg border-t border-gray-200 bg-gray-50 p-6"
         >
           <button
             @click="closeModal"
             type="button"
-            class="px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 hover:cursor-pointer"
+            class="rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:cursor-pointer hover:bg-gray-50"
           >
             Close
           </button>
           <button
             type="submit"
-            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm"
+            class="inline-flex items-center rounded-md border border-transparent px-4 py-2 text-sm font-medium shadow-sm"
             :class="[
               creating
-                ? 'text-black bg-gray-300 border-gray-800 cursor-not-allowed opacity-50'
-                : 'text-white bg-blue-600 hover:bg-blue-700 hover:cursor-pointer',
+                ? 'cursor-not-allowed border-gray-800 bg-gray-300 text-black opacity-50'
+                : 'bg-blue-600 text-white hover:cursor-pointer hover:bg-blue-700',
             ]"
           >
-            {{creating ? "Please wait" : "Save"}}
-            <PulseLoader v-show="creating" class="ml-2" size="8px" color="black"/>
+            {{ creating ? "Please wait" : "Save" }}
+            <PulseLoader
+              v-show="creating"
+              class="ml-2"
+              size="8px"
+              color="black"
+            />
           </button>
         </div>
       </form>

@@ -54,6 +54,12 @@ const logout = async () => {
           >
             Products
           </RouterLink>
+          <RouterLink
+            to="/forums"
+            class="px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700"
+          >
+            Forums
+          </RouterLink>
         </nav>
         <div class="flex items-center">
           <div>
