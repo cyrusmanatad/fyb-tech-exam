@@ -59,7 +59,7 @@ class ProductController extends Controller
                 "errors" => $validator->errors()
             ], 422);
         }
-        if(!$this->productService->create($request->only(["user_id", "sku_code", "sku_desc", "sku_uom", "sku_price"]))) {
+        if(!$this->productService->create($request->only(["user_id", "sku_code", "sku_desc", "sku_desc_long", "sku_uom", "sku_price"]))) {
             return response()->json([
                 "message" => "Failed to create product"
             ], 500);

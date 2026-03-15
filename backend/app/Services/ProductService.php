@@ -23,6 +23,7 @@ class ProductService
                 "user_id" => $validatedData['user_id'], 
                 "sku_code" => $validatedData['sku_code'], 
                 "sku_desc" => $validatedData['sku_desc'], 
+                "sku_desc_long" => $validatedData['sku_desc_long'], 
                 "sku_uom" => $validatedData['sku_uom'], 
                 "sku_price" => $validatedData['sku_price'],
             ]);
@@ -38,6 +39,7 @@ class ProductService
                 "user_id" => $validatedData['user_id'], 
                 "sku_code" => $validatedData['sku_code'], 
                 "sku_desc" => $validatedData['sku_desc'], 
+                "sku_desc_long" => $validatedData['sku_desc_long'], 
                 "sku_uom" => $validatedData['sku_uom'], 
                 "sku_price" => $validatedData['sku_price'],
             ]);

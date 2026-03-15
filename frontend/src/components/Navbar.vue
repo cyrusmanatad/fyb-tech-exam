@@ -54,6 +54,12 @@ const logout = async () => {
           >
             Products
           </RouterLink>
+          <RouterLink
+            to="/forums"
+            class="px-3 py-2 text-sm font-medium text-gray-500 hover:text-gray-700"
+          >
+            Forums
+          </RouterLink>
         </nav>
         <div class="flex items-center">
           <div>
@@ -63,7 +69,7 @@ const logout = async () => {
                 class="inline-block mt-1.5 h-4 w-32 rounded-md bg-gray-200 shadow-sm animate-pulse"
               ></span>
               <span v-else-if="auth.user !== null" class="text-sm font-medium text-gray-700">
-                Hello, {{ auth?.user?.name || "User!" }}
+                Hello, {{ auth.user.name || "User!" }}
               </span>
             </p>
           </div>

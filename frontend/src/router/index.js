@@ -4,6 +4,7 @@ import HomeView from "../views/HomeView.vue";
 import RegisterView from "../views/RegisterView.vue";
 import LoginView from "../views/LoginView.vue";
 import ProductsView from "../views/ProductsView.vue";
+import ForumView from "../views/ForumView.vue";
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -18,6 +19,11 @@ const router = createRouter({
             name: 'products',
             component: ProductsView,
             meta: { requiresAuth: true }
+        },
+        {
+            path: '/forums',
+            name: 'forums',
+            component: ForumView
         },
         {
             path: '/login',

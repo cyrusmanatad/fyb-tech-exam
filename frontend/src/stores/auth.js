@@ -21,8 +21,9 @@ export const useAuthStore = defineStore("auth", {
 
         axios.defaults.headers.common["Authorization"] = `Bearer ${this.accessToken}`;
 
-        const { data: user } = await axios.get("/api/users/me");
-        this.user = user;
+        const { data: user, status } = await axios.get("/api/users/me");
+        this.user = user.data;
+        this.status = status;
         
         return true;
       } catch (error) {

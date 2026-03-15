@@ -27,3 +27,5 @@ Route::group([
 })->middleware('auth:api');
 
 Route::resource('products', App\Http\Controllers\ProductController::class)->middleware('auth:api');
+Route::resource('forums', App\Http\Controllers\ForumController::class)->middleware('auth:api');
+Route::resource('forums/{forum}/comments', App\Http\Controllers\ForumCommentController::class)->middleware('auth:api');

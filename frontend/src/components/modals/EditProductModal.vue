@@ -24,6 +24,7 @@ const handleUpdate = async () => {
     const { data } = await axios.put(`/api/products/${props.product.id}`, {
       user_id: auth.user.id,
       sku_desc: props.product.sku_desc,
+      sku_desc_long: props.product.sku_desc_long,
       sku_code: props.product.sku_code,
       sku_price: props.product.sku_price,
       sku_uom: props.product.sku_uom,
@@ -117,6 +118,7 @@ const closeModal = () => {
                 id="description"
                 name="description"
                 type="text"
+                v-model="product.sku_desc_long"
                 autoComplete="current-description"
                 class="block w-full appearance-none rounded-md border px-3 py-2 placeholder-gray-400 shadow-sm focus:outline-none sm:text-sm"
               />
