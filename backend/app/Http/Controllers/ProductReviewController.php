@@ -13,7 +13,8 @@ class ProductReviewController extends Controller
      */
     public function index()
     {
-        //
+        $query = ProductReview::with('user')->orderByDesc('created_at');
+        return $query->paginate(5);
     }
 
     /**
