@@ -19,10 +19,10 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $query = Product::query()
-        ->select(['id','user_id','slug', 'status', 'created_at'])
+        ->select(['id','user_id','category_id','slug', 'status', 'created_at'])
         ->with([
             'user:id,name,email',
-            'variants:id,product_id,desc,sku,uom,price,sale_price,currency',
+            'variants:id,product_id,desc,desc_long,sku,uom,price,sale_price,currency',
             'variants.inventory:id,variant_id,stock_quantity,reserved_quantity',
             'category:id,name'
         ])
