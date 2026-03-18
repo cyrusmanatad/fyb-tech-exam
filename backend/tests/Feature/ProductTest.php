@@ -122,6 +122,33 @@ test('update updates product', function () {
     ]);
 });
 
+test('update should not update using other account', function () {
+    $otherUser = User::factory()->create();
+
+    $product = Product::factory()->create([
+        'user_id' => $this->user->id,
+    ]);
+
+    $this->actingAs($otherUser);
+
+    $updatedData = [
+        'sku_code' => 'UPDATED_SKU',
+        'sku_desc' => 'Updated Product Description',
+        'sku_desc_long' => 'Long description',
+        'sku_uom' => 'Box',
+        'sku_price' => 25.50,
+    ];
+
+    $response = $this->putJson("/api/products/{$product->id}", $updatedData);
+
+    $response->assertStatus(403);
+
+    $this->assertDatabaseMissing('products', [
+        'id' => $product->id,
+        'sku_code' => 'UPDATED_SKU',
+    ]);
+});
+
 test('update validation errors', function () {
     $product = Product::factory()->create([
         'user_id' => $this->user->id,

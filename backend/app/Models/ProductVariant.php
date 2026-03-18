@@ -1,0 +1,44 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
+
+class ProductVariant extends Model
+{
+    use HasFactory, SoftDeletes;
+    protected $fillable = [
+        'product_id',
+        'sku',
+        'desc',
+        'desc_long',
+        'uom',
+        'price',
+        'sale_price',
+        'currency',
+        'is_active',
+    ];
+
+    protected $casts = [
+        'price' => 'decimal:2',
+        'sale_price' => 'decimal:2',
+    ];
+
+    protected $appends = ['humanize_datetime'];
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class);
+    }
+
+    public function inventory()
+    {
+        return $this->hasOne(Inventory::class, 'variant_id');
+    }
+
+    public function getHumanizeDatetimeAttribute(){
+        return $this->created_at ? $this->created_at->diffForHumans() : null;
+    }
+}

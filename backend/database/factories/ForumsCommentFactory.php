@@ -2,13 +2,14 @@
 
 namespace Database\Factories;
 
+use App\Models\Forum;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Forum>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\ForumsComment>
  */
-class ForumFactory extends Factory
+class ForumsCommentFactory extends Factory
 {
     /**
      * Define the model's default state.
@@ -19,8 +20,8 @@ class ForumFactory extends Factory
     {
         return [
             'user_id' => User::inRandomOrder()->first()->id ?? User::factory(),
-            'title' => $this->faker->sentence(6),
-            'content' => $this->faker->paragraphs(3, true),
+            'forum_id' => Forum::inRandomOrder()->first()->id ?? Forum::factory(),
+            'comment' => $this->faker->paragraph(),
         ];
     }
 }

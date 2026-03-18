@@ -13,13 +13,59 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
-            $table->string('sku_code');
-            $table->string('sku_desc');
-            $table->string('sku_uom');
-            $table->string('sku_price')->nullable();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('category_id')->nullable()->constrained()->nullOnDelete();
+            $table->string('slug')->unique();
+            $table->string('status')->default('draft');
             $table->timestamps();
+            $table->softDeletes();
+        });
+
+        Schema::create('product_variants', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('product_id')->constrained()->cascadeOnDelete();
+            $table->string('sku')->unique()->nullable();
+            $table->string('desc');
+            $table->text('desc_long');
+            $table->string('uom');
+            $table->decimal('price', 12, 2);
+            $table->decimal('sale_price', 12, 2)->nullable();
+            $table->string('currency', 10)->default('PHP');
+            $table->boolean('is_active')->default(true);
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        Schema::create('inventories', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('variant_id')
+                  ->constrained('product_variants')
+                  ->cascadeOnDelete();
+            $table->integer('stock_quantity')->default(0);
+            $table->integer('reserved_quantity')->default(0);
+            $table->integer('low_stock_threshold')->default(5);
+            $table->timestamps();
+
+            $table->unique('variant_id');
+        });
+
+        Schema::create('product_images', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('product_id')->constrained()->cascadeOnDelete();
+            $table->text('url');
+            $table->integer('sort_order')->default(0);
+            $table->timestamps();
+        });
+
+        // VARIANT ATTRIBUTE VALUES (pivot-style)
+        Schema::create('variant_attribute_values', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('variant_id')
+                  ->constrained('product_variants')
+                  ->cascadeOnDelete();
+            $table->foreignId('attribute_value_id')->constrained()->cascadeOnDelete();
+
+            $table->unique(['variant_id', 'attribute_value_id']);
         });
     }
 
@@ -28,6 +74,10 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('variant_attribute_values');
+        Schema::dropIfExists('product_images');
+        Schema::dropIfExists('inventories');
+        Schema::dropIfExists('product_variants');
         Schema::dropIfExists('products');
     }
 };

@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -20,10 +21,8 @@ class ProductFactory extends Factory
     {
         return [
             'user_id' => User::factory(),
-            'sku_code' => $this->faker->unique()->word() . $this->faker->randomNumber(3),
-            'sku_desc' => $this->faker->sentence(),
-            'sku_uom' => $this->faker->randomElement(['Pcs', 'Box', 'Kg', 'Lt']),
-            'sku_price' => $this->faker->randomFloat(2, 1, 1000),
+            'category_id' => Category::inRandomOrder()->first()->id ?? Category::factory(),
+            'slug' => $this->faker->slug(),
         ];
     }
 }

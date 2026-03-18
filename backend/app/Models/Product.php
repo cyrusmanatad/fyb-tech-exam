@@ -4,17 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
     protected $fillable = [
         'user_id',
-        'sku_code',
-        'sku_desc',
-        'sku_desc_long',
-        'sku_uom',
-        'sku_price',
+        'category_id',
+        'slug',
+        'status',
     ];
 
     protected $appends = ['humanize_datetime'];
@@ -27,6 +26,16 @@ class Product extends Model
     public function reviews()
     {
         return $this->hasMany(ProductReview::class);
+    }
+
+    public function variants()
+    {
+        return $this->hasMany(ProductVariant::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
 
     public function getHumanizeDatetimeAttribute(){
