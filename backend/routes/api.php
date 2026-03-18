@@ -1,31 +1,33 @@
 <?php
 
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\ForumController;
+use App\Http\Controllers\ForumCommentController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
-Route::group([
-    'prefix' => 'auth'
-], function ($router) {
-    Route::post('login', [AuthController::class, 'login']);
-    Route::post('register', [AuthController::class, 'register']);
+Route::prefix('v1')->group(function () {
+    // Public
+    Route::prefix('auth')->group(function () {
+        Route::post('login', [AuthController::class, 'login'])->middleware('throttle:5,1');
+        Route::post('register', [AuthController::class, 'register']);
+    });
+
+    // Protected
+    Route::middleware(['api', 'auth:api'])->group(function () {
+
+        Route::prefix('auth')->group(function () {
+            Route::post('logout', [AuthController::class, 'logout']);
+            Route::post('refresh', [AuthController::class, 'refresh']);
+        });
+
+        Route::get('users/me', [AuthController::class, 'me']);
+
+        Route::apiResource('products', ProductController::class);
+        Route::apiResource('forums', ForumController::class);
+        Route::apiResource('forums.comments', ForumCommentController::class);
+
+        Route::get('categories', [CategoryController::class, 'index']);
+    });
 });
-
-Route::group([
-    'middleware' => 'api',
-    'prefix' => 'auth'
-], function ($router) {
-    Route::post('logout', [AuthController::class, 'logout']);
-    Route::post('refresh', [AuthController::class, 'refresh']);
-})->middleware('auth:api');
-
-Route::group([
-    'middleware' => 'api',
-    'prefix' => 'users'
-], function ($router) {
-    Route::get('me', [UserController::class, 'me']);
-})->middleware('auth:api');
-
-Route::resource('products', App\Http\Controllers\ProductController::class)->middleware('auth:api');
-Route::resource('forums', App\Http\Controllers\ForumController::class)->middleware('auth:api');
-Route::resource('forums/{forum}/comments', App\Http\Controllers\ForumCommentController::class)->middleware('auth:api');

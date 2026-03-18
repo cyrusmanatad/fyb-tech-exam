@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProductRequest;
+use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use App\Services\ProductService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class ProductController extends Controller
@@ -16,20 +18,30 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Product::with('user')->orderByDesc('created_at');
+        $query = Product::query()
+        ->select(['id','user_id','category_id','slug', 'status', 'created_at'])
+        ->with([
+            'user:id,name,email',
+            'variants:id,product_id,desc,desc_long,sku,uom,price,sale_price,currency',
+            'variants.inventory:id,variant_id,stock_quantity,reserved_quantity',
+            'category:id,name'
+        ])
+        ->orderByDesc('created_at');
 
-        if ($request->has('search') && !empty($request->search)) {
+        if ($request->filled('search')) {
             $search = $request->search;
 
-            // Adjust the fields you want to search in
             $query->where(function ($q) use ($search) {
-                $q->where('sku_code', 'like', "%{$search}%")
-                ->orWhere('sku_desc', 'like', "%{$search}%")
-                ->orWhere('sku_uom', 'like', "%{$search}%");
+                $q->where('slug', 'like', "%{$search}%")
+                ->orWhereHas("variants", function ($q2) use ($search) {
+                    $q2->where('sku', 'like', "%{$search}%")
+                    ->orWhere('desc', 'like', "%{$search}%")
+                    ->orWhere('uom', 'like', "%{$search}%");
+                });
             });
         }
 
-        return $query->paginate(5);
+        return ProductResource::collection($query->paginate(10));
     }
 
     /**
@@ -46,7 +58,6 @@ class ProductController extends Controller
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'user_id' => 'required|exists:users,id',
             'sku_code' => 'required|string|unique:products,sku_code',
             'sku_desc' => 'required|string',
             'sku_uom' => 'required|string',
@@ -59,7 +70,12 @@ class ProductController extends Controller
                 "errors" => $validator->errors()
             ], 422);
         }
-        if(!$this->productService->create($request->only(["user_id", "sku_code", "sku_desc", "sku_desc_long", "sku_uom", "sku_price"]))) {
+
+        $data = $request->only(["sku_code", "sku_desc", "sku_desc_long", "sku_uom", "sku_price"]);
+
+        $data['user_id'] = Auth::id();
+
+        if(!$this->productService->create($data)) {
             return response()->json([
                 "message" => "Failed to create product"
             ], 500);
@@ -91,6 +107,8 @@ class ProductController extends Controller
      */
     public function update(ProductRequest $request, Product $product)
     {
+        $this->authorize('update', $product);
+
         if(!$this->productService->update($product, $request->validated())) {
             return response()->json([
                 "message" => "Failed to update product"

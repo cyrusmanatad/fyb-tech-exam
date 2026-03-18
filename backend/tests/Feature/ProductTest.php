@@ -4,9 +4,11 @@ namespace Tests\Feature;
 
 use App\Models\Product;
 use App\Models\User;
+use Illuminate\Foundation\Testing\Concerns\MakesHttpRequests;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
 uses(RefreshDatabase::class);
+uses(MakesHttpRequests::class);
 
 beforeEach(function () {
     $this->user = User::factory()->create();
@@ -46,6 +48,7 @@ test('store creates product', function () {
         'user_id' => $this->user->id,
         'sku_code' => 'SKU001',
         'sku_desc' => 'Test Product',
+        'sku_desc_long' => 'Long description',
         'sku_uom' => 'Pcs',
         'sku_price' => 10.99,
     ];
@@ -67,6 +70,7 @@ test('store validation errors', function () {
         'user_id' => $this->user->id,
         'sku_code' => '', // Invalid
         'sku_desc' => 'Test Product',
+        'sku_desc_long' => 'Long description',
         'sku_uom' => 'Pcs',
         'sku_price' => 'invalid-price', // Invalid
     ];
@@ -100,6 +104,7 @@ test('update updates product', function () {
         'user_id' => $this->user->id,
         'sku_code' => 'UPDATED_SKU',
         'sku_desc' => 'Updated Product Description',
+        'sku_desc_long' => 'Long description',
         'sku_uom' => 'Box',
         'sku_price' => 25.50,
     ];
@@ -117,6 +122,33 @@ test('update updates product', function () {
     ]);
 });
 
+test('update should not update using other account', function () {
+    $otherUser = User::factory()->create();
+
+    $product = Product::factory()->create([
+        'user_id' => $this->user->id,
+    ]);
+
+    $this->actingAs($otherUser);
+
+    $updatedData = [
+        'sku_code' => 'UPDATED_SKU',
+        'sku_desc' => 'Updated Product Description',
+        'sku_desc_long' => 'Long description',
+        'sku_uom' => 'Box',
+        'sku_price' => 25.50,
+    ];
+
+    $response = $this->putJson("/api/products/{$product->id}", $updatedData);
+
+    $response->assertStatus(403);
+
+    $this->assertDatabaseMissing('products', [
+        'id' => $product->id,
+        'sku_code' => 'UPDATED_SKU',
+    ]);
+});
+
 test('update validation errors', function () {
     $product = Product::factory()->create([
         'user_id' => $this->user->id,
@@ -126,6 +158,7 @@ test('update validation errors', function () {
         'user_id' => $this->user->id,
         'sku_code' => '', // Invalid
         'sku_desc' => 'Updated Product Description',
+        'sku_desc_long' => 'Long description',
         'sku_uom' => 'Box',
         'sku_price' => 'not-a-number', // Invalid
     ];

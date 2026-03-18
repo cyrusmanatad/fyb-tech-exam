@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class ProductRequest extends FormRequest
 {
@@ -13,22 +14,27 @@ class ProductRequest extends FormRequest
      */
     public function rules(): array
     {
-        $rules = [
-            'user_id' => 'required|exists:users,id',
-            'sku_code' => 'required|string|unique:products,sku_code',
-            'sku_desc' => 'required|string',
-            'sku_desc_long' => 'string',
-            'sku_uom' => 'required|string',
-            'sku_price' => 'required|numeric',
-        ];
+        $product = $this->route('product');
 
-        if ($this->isMethod('PUT') || $this->isMethod('PATCH')) {
-            $rules['sku_code'] = [
+        $variantId = $product->variants()->value('id');
+        
+        $rules = [
+            'category_id' => 'numeric',
+            'sku' => [
                 'required',
                 'string',
-                'unique:products,sku_code,' . $this->route('product')->id,
-            ];
-        }
+                Rule::unique('product_variants', 'sku')->ignore($variantId),
+            ],
+            'desc' => 'required|string',
+            'desc_long' => 'string',
+            'uom' => 'required|string',
+            'price' => 'required|numeric',
+            'sell_price' => 'required|numeric',
+            'status' => 'required|string',
+            'stock' => 'required|numeric',
+            'slug' => 'string',
+            'currency' => 'string',
+        ];
 
         return $rules;
     }
