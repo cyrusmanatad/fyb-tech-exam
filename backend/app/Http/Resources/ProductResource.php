@@ -55,6 +55,7 @@ class ProductResource extends JsonResource
             $this->status === 'published' && $stock > 0 => 'Published',
             $this->status === 'published' && $stock <= 0 => 'Out Stock',
             $this->status === 'draft'                   => 'Draft List',
+            $this->status === 'out-of-stock'            => 'Out Stock', 
             default                                     => 'Inactive',
         };
     }
