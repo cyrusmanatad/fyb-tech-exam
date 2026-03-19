@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('category_id')->nullable()->constrained()->nullOnDelete();
+            // $table->foreignId('category_id')->nullable()->constrained()->nullOnDelete();
             $table->string('slug')->unique();
             $table->string('status')->default('draft');
             $table->timestamps();
@@ -58,15 +58,15 @@ return new class extends Migration
         });
 
         // VARIANT ATTRIBUTE VALUES (pivot-style)
-        Schema::create('variant_attribute_values', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('variant_id')
-                  ->constrained('product_variants')
-                  ->cascadeOnDelete();
-            $table->foreignId('attribute_value_id')->constrained()->cascadeOnDelete();
+        // Schema::create('variant_attribute_values', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->foreignId('variant_id')
+        //           ->constrained('product_variants')
+        //           ->cascadeOnDelete();
+        //     $table->foreignId('attribute_value_id')->constrained()->cascadeOnDelete();
 
-            $table->unique(['variant_id', 'attribute_value_id']);
-        });
+        //     $table->unique(['variant_id', 'attribute_value_id']);
+        // });
     }
 
     /**

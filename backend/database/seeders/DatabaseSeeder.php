@@ -37,7 +37,7 @@ class DatabaseSeeder extends Seeder
         $categories = ['Electronics', 'Fashion', 'Home & Living', 'Beauty', 'Sports', 'Gadgets'];
 
         $mapCategories = array_map(function ($category, $index) {
-            $ctr = $index + 2;
+            $ctr = $index + 1;
 
             return [
                 'name' => $category,
