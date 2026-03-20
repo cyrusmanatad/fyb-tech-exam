@@ -19,10 +19,12 @@ class ProductFactory extends Factory
      */
     public function definition(): array
     {
+        $statuses = ['published', 'out-of-stock', 'draft', 'inactive'];
         return [
             'user_id' => User::factory(),
             'category_id' => Category::inRandomOrder()->first()->id ?? Category::factory(),
             'slug' => $this->faker->slug(),
+            'status' => $statuses[mt_rand(0, count($statuses) -1)],
         ];
     }
 }

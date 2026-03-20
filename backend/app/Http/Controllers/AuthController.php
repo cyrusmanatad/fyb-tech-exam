@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
@@ -64,11 +65,16 @@ class AuthController extends Controller
     /**
      * Get the authenticated User.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return UserResource
      */
-    public function me()
+    public function me(Request $request)
     {
-        return response()->json(Auth::user());
+        // return response()->json(Auth::user());
+        
+        // Eager load roles and permissions to avoid N+1
+        $user = $request->user()->load('roles', 'permissions');
+
+        return new UserResource($user);
     }
 
     /**

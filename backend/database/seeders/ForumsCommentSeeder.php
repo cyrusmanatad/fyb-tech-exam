@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use App\Models\ForumsComment;
 use Illuminate\Database\Seeder;
 
-class ForumCommentSeeder extends Seeder
+class ForumsCommentSeeder extends Seeder
 {
     /**
      * Run the database seeds.
