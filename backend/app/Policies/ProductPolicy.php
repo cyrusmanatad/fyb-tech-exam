@@ -30,7 +30,7 @@ class ProductPolicy
      */
     public function create(User $user): bool
     {
-        return false;
+        return $user->can("create products");
     }
 
     /**

@@ -19,7 +19,7 @@ class ProductVariantFactory extends Factory
     public function definition(): array
     {
         return [
-            'product_id' => Product::factory(),
+            'product_id' => Product::inRandomOrder()->first()->id,
             'sku' => $this->faker->unique()->bothify('SKU-####'),
             'desc' => $this->faker->sentence(),
             'desc_long' => $this->faker->paragraph(2, true),

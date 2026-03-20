@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\ProductRequest;
+use App\DTOs\ProductData;
+use App\Http\Requests\StoreProductRequest;
+use App\Http\Requests\UpdateProductRequest;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
 use App\Services\ProductService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Log;
 
 class ProductController extends Controller
 {
@@ -55,35 +57,29 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreProductRequest $request)
     {
-        $validator = Validator::make($request->all(), [
-            'sku_code' => 'required|string|unique:products,sku_code',
-            'sku_desc' => 'required|string',
-            'sku_uom' => 'required|string',
-            'sku_price' => 'required|numeric',
-        ]);
+        $this->authorize('create', Product::class);
 
-        if($validator->fails()) {
+        $dto = ProductData::fromRequest(
+            $request->validated(),
+            Auth::id()
+        );
+
+        try {
+            $product = $this->productService->create($dto);
+            
             return response()->json([
-                "message" => "Unable to create product",
-                "errors" => $validator->errors()
-            ], 422);
-        }
+                "message" => "Product created successfully",
+                "data" => $product
+            ], 201);
+        } catch (\Throwable $th) {
+            Log::error($th);
 
-        $data = $request->only(["sku_code", "sku_desc", "sku_desc_long", "sku_uom", "sku_price"]);
-
-        $data['user_id'] = Auth::id();
-
-        if(!$this->productService->create($data)) {
             return response()->json([
-                "message" => "Failed to create product"
+                "message" => "Failed to create product",
             ], 500);
         }
-        
-        return response()->json([
-            "message" => "Product created successfully"
-        ]);
     }
 
     /**
@@ -105,19 +101,29 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(ProductRequest $request, Product $product)
+    public function update(UpdateProductRequest $request, Product $product)
     {
-        $this->authorize('update', $product);
+        try {
+            $this->authorize('update', $product);
 
-        if(!$this->productService->update($product, $request->validated())) {
+            $dto = ProductData::fromRequest(
+                $request->validated(),
+                Auth::id()
+            );
+    
+            $product = $this->productService->update($product, $dto);
+            
             return response()->json([
-                "message" => "Failed to update product"
+                "message" => "Product updated successfully",
+                "data" => $product
+            ]);
+        } catch (\Throwable $th) {
+            Log::error($th);
+
+            return response()->json([
+                "message" => "Failed to update product",
             ], 500);
         }
-        
-        return response()->json([
-            "message" => "Product updated successfully"
-        ]);
     }
 
     /**

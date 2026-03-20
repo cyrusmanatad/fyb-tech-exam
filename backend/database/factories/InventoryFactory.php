@@ -19,7 +19,7 @@ class InventoryFactory extends Factory
     public function definition(): array
     {
         return [
-            'variant_id' => ProductVariant::factory(),
+            'variant_id' => ProductVariant::inRandomOrder()->first()->id ?? ProductVariant::factory(),
             'stock_quantity' => mt_rand(50,99999),
             'reserved_quantity' => mt_rand(50, 100),
             'low_stock_threshold' => mt_rand(50, 100),

@@ -5,7 +5,7 @@ namespace App\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-class ProductRequest extends FormRequest
+class UpdateProductRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
@@ -19,21 +19,21 @@ class ProductRequest extends FormRequest
         $variantId = $product->variants()->value('id');
         
         $rules = [
-            'category_id' => 'numeric',
+            'category_id' => 'integer|exists:categories,id',
             'sku' => [
                 'required',
                 'string',
                 Rule::unique('product_variants', 'sku')->ignore($variantId),
             ],
             'desc' => 'required|string',
-            'desc_long' => 'string',
+            'desc_long' => 'nullable|string',
             'uom' => 'required|string',
-            'price' => 'required|numeric',
-            'sell_price' => 'required|numeric',
-            'status' => 'required|string',
-            'stock' => 'required|numeric',
-            'slug' => 'string',
-            'currency' => 'string',
+            'price' => 'required|numeric|min:0',
+            'sell_price' => 'required|numeric|min:0',
+            'status' => 'required|in:published,out-of-stock,inactive,draft',
+            'stock' => 'required|numeric|min:0',
+            'slug' => 'nullable|string',
+            'currency' => 'nullable|string|size:3',
         ];
 
         return $rules;
