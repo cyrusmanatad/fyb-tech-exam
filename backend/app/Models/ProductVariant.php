@@ -24,6 +24,7 @@ class ProductVariant extends Model
     protected $casts = [
         'price' => 'decimal:2',
         'sale_price' => 'decimal:2',
+        'is_active' => 'boolean'
     ];
 
     protected $appends = ['humanize_datetime'];
