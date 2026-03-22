@@ -16,25 +16,43 @@ class UpdateProductRequest extends FormRequest
     {
         $product = $this->route('product');
 
-        $variantId = $product->variants()->value('id');
+        // $variantId = $product->variants()->value('id');
         
         $rules = [
             'category_id' => 'integer|exists:categories,id',
-            'sku' => [
+            'base_sku' => [
                 'required',
                 'string',
-                Rule::unique('product_variants', 'sku')->ignore($variantId),
+                Rule::unique('products', 'base_sku')->ignore($product?->id),
             ],
-            'desc' => 'required|string',
-            'desc_long' => 'nullable|string',
+            'title' => 'required|string',
+            'description' => 'nullable|string',
             'uom' => 'required|string',
             'price' => 'required|numeric|min:0',
-            'sell_price' => 'required|numeric|min:0',
+            'sale_price' => 'required|numeric|min:0',
             'status' => 'required|in:published,out-of-stock,inactive,draft',
             'stock' => 'required|numeric|min:0',
             'slug' => 'nullable|string',
             'currency' => 'nullable|string|size:3',
+            'options' => 'nullable|array',
+            'variants.*.sku' => [
+                'required',
+                'string',
+                'distinct',
+            ],
+            'variants.*.price' => 'required|numeric|min:0',
+            'variants.*.sale_price' => 'required|numeric|min:0',
+            'variants.*.stock' => 'required|numeric|min:0',
+            'variants.*.reserved_quantity' => 'nullable|numeric|min:0',
+            'variants.*.attributes' => 'required|array',
         ];
+
+        // handle unique SKU per variant (update-safe)
+        // foreach ($this->input('variants', []) as $index => $variant) {
+        //     $rules["variants.$index.sku"][] =
+        //         Rule::unique('product_variants', 'sku')
+        //             ->ignore($variant['id'] ?? null);
+        // }
 
         return $rules;
     }

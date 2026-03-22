@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\Product;
+use App\Observers\ProductVariantObserver;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -26,5 +28,7 @@ class AppServiceProvider extends ServiceProvider
                  return true;
              }
          });
+
+         Product::observe(ProductVariantObserver::class);
     }
 }

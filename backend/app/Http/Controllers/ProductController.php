@@ -21,10 +21,10 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $query = Product::query()
-        ->select(['id','user_id','category_id','slug', 'status', 'created_at'])
+        ->select(['id','user_id','category_id','base_sku','title','description','slug', 'status', 'created_at'])
         ->with([
             'user:id,name,email',
-            'variants:id,product_id,desc,desc_long,sku,uom,price,sale_price,currency',
+            'variants:id,product_id,sku,uom,price,sale_price,currency,attributes',
             'variants.inventory:id,variant_id,stock_quantity,reserved_quantity',
             'category:id,name'
         ])
@@ -35,9 +35,9 @@ class ProductController extends Controller
 
             $query->where(function ($q) use ($search) {
                 $q->where('slug', 'like', "%{$search}%")
+                ->orWhere('title', 'like', "%{$search}%")
                 ->orWhereHas("variants", function ($q2) use ($search) {
                     $q2->where('sku', 'like', "%{$search}%")
-                    ->orWhere('desc', 'like', "%{$search}%")
                     ->orWhere('uom', 'like', "%{$search}%");
                 });
             });

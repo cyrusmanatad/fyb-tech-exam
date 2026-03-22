@@ -6,6 +6,7 @@ namespace App\Services;
 use App\DTOs\ProductData;
 use App\Models\Product;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ProductService
 {
@@ -23,26 +24,31 @@ class ProductService
             $product = Product::create([
                 'user_id'     => $data->user_id,
                 'category_id' => $data->category_id,
+                'base_sku'    => $data->base_sku,
+                'title'       => $data->title,
+                'description' => $data->description ?? null,
                 'slug'        => $data->slug,
                 'status'      => $data->status,
             ]);
 
-            // 2. Create Variant
-            $variant = $product->variants()->create([
-                'sku'        => $data->sku,
-                'desc'       => $data->desc,
-                'desc_long'  => $data->desc_long ?? null,
-                'uom'        => $data->uom,
-                'price'      => $data->sell_price,
-                'sale_price' => $data->price,
-                'currency'   => $data->currency ?? 'USD',
-            ]);
+            foreach ($data->variants as $item) {
+                // 2. Create Variant
+                $variant = $product->variants()->create([
+                    'sku'        => $item['sku'],
+                    'uom'        => $data->uom,
+                    'price'      => $item['price'],
+                    'sale_price' => $item['sale_price'],
+                    'currency'   => $data->currency ?? 'USD',
+                    'attributes' => json_encode($item['attributes'])
+                ]);
+    
+                // 3. Create Inventory for that Variant
+                $variant->inventory()->create([
+                    'stock_quantity'    => $item['stock'] ?? 0,
+                    'reserved_quantity' => 0,
+                ]);
+            }
 
-            // 3. Create Inventory for that Variant
-            $variant->inventory()->create([
-                'stock_quantity'    => $data->stock_quantity ?? 0,
-                'reserved_quantity' => 0,
-            ]);
 
             return $product->fresh(['variants.inventory']);
         });
@@ -51,32 +57,50 @@ class ProductService
     public function update(Product $product, ProductData $data): bool
     {
         return DB::transaction(function () use ($product, $data) {
-            // 1. Update Product
+            // Update Product
             $product->update([
                 'category_id' => $data->category_id,
+                'base_sku'    => $data->base_sku,
+                'title'       => $data->title,
+                'description' => $data->description ?? null,
                 'slug'        => $data->slug,
                 'status'      => $data->status,
             ]);
 
-            // 2. Update or Create Variant
-            $variant = $product->variants()->first();
+            // Get existing variant IDs to track deletions
+            $existingVariantIds = $product->variants->pluck('id')->toArray();
+            $updatedVariantIds  = [];
 
-            if ($variant) {
-                $variant->update([
-                    'sku'        => $data->sku,
-                    'desc'       => $data->desc,
-                    'desc_long'  => $data->desc_long ?? null,
-                    'uom'        => $data->uom,
-                    'price'      => $data->sell_price,
-                    'sale_price' => $data->price,
-                    'currency'   => $data->currency ?? $variant->currency,
-                ]);
-
-                // 3. Update or Create Inventory
-                $variant->inventory()->updateOrCreate(
-                    ['variant_id' => $variant->id],  // find by
-                    ['stock_quantity' => $data->stock] // update with
+            // Update or Create each variant
+            foreach ($data->variants as $item) {
+                $variant = $product->variants()->updateOrCreate(
+                    ['sku' => $item['sku']],           // find by SKU
+                    [
+                        'sku'        => $item['sku'],
+                        'uom'        => $data->uom,
+                        'price'      => $item['price'],
+                        'sale_price' => $item['sale_price'],
+                        'currency'   => $data->currency ?? 'USD',
+                        'attributes' => json_encode($item['attributes']),
+                        'is_active'  => true,
+                    ]
                 );
+
+                // Update or Create Inventory per variant
+                $variant->inventory()->updateOrCreate(
+                    ['variant_id' => $variant->id],
+                    ['stock_quantity' => $item['stock'] ?? 0]
+                );
+
+                $updatedVariantIds[] = $variant->id;
+            }
+
+            // Soft delete variants that were removed from the payload
+            $removedIds = array_diff($existingVariantIds, $updatedVariantIds);
+            if (!empty($removedIds)) {
+                $product->variants()
+                        ->whereIn('id', $removedIds)
+                        ->each(fn($v) => $v->delete()); // respects observer & soft delete
             }
 
             return true;
@@ -95,5 +119,43 @@ class ProductService
 
             return $product->delete();
         });
+    }
+
+    public function generateVariants(array $options, string $baseSku, $price = 0, $salePrice = null): array
+    {
+        $combinations = [[]];
+
+        foreach ($options as $option) {
+            $tmp = [];
+
+            foreach ($combinations as $combination) {
+                foreach ($option['values'] as $value) {
+                    $tmp[] = array_merge($combination, [
+                        $option['name'] => $value
+                    ]);
+                }
+            }
+
+            $combinations = $tmp;
+        }
+
+        $variants = [];
+
+        foreach ($combinations as $attributes) {
+            $skuParts = [$baseSku];
+
+            foreach ($attributes as $value) {
+                $skuParts[] = strtoupper(str_replace([' ', '-'], '-', $value));
+            }
+
+            $variants[] = [
+                'sku' => implode('-', $skuParts),
+                'price' => $price,
+                'sale_price' => $salePrice,
+                'attributes' => $attributes,
+            ];
+        }
+
+        return $variants;
     }
 }

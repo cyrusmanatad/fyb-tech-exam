@@ -12,18 +12,18 @@ class ProductVariant extends Model
     protected $fillable = [
         'product_id',
         'sku',
-        'desc',
-        'desc_long',
         'uom',
         'price',
         'sale_price',
         'currency',
         'is_active',
+        'attributes',
     ];
 
     protected $casts = [
         'price' => 'decimal:2',
         'sale_price' => 'decimal:2',
+        'is_active' => 'boolean'
     ];
 
     protected $appends = ['humanize_datetime'];
