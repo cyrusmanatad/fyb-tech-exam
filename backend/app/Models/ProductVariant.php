@@ -12,13 +12,12 @@ class ProductVariant extends Model
     protected $fillable = [
         'product_id',
         'sku',
-        'desc',
-        'desc_long',
         'uom',
         'price',
         'sale_price',
         'currency',
         'is_active',
+        'attributes',
     ];
 
     protected $casts = [

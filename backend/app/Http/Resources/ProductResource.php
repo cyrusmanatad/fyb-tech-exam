@@ -27,17 +27,28 @@ class ProductResource extends JsonResource
 
         // Get price from first variant
         $firstVariant = $this->variants->first();
+        $variants = $this->variants->map(function ($variant) {
+            return [
+                'sku' => $variant->sku,
+                'price' => $variant->price,
+                'sale_price' => $variant->sale_price,
+                'attributes' => json_decode($variant->attributes, true), // decode JSON
+                'stock' => $variant->inventory->stock_quantity ?? 0,
+                'reserved_quantity' => $variant->inventory->reserved_quantity ?? 0,
+            ];
+        });
 
         return [
             'id'        => $this->id,
-            'sku'       => $firstVariant?->sku ?? "",
-            'desc'      => $firstVariant?->desc ?? "",
-            'desc_long'      => $firstVariant?->desc_long ?? "",
+            'base_sku'       => $this->base_sku ?? "",
+            'title'      => $this->title,
+            'description'      => $this->description,
+            'variants' => $variants,
             'category_id' => $this->category->id ?? 0,
             'category'  => $this->category?->name ?? 'Uncategorized',
             'price'     => $firstVariant?->price ?? 0,
             'price_humanize' => number_format($firstVariant?->price, 2) ?? 0,
-            'sell_price' => $firstVariant?->sale_price ?? 0,
+            'sale_price' => $firstVariant?->sale_price ?? 0,
             'sp_humanize' => number_format($firstVariant?->sale_price, 2) ?? 0,
             'slug'      => $this->slug,
             'stock'     => $availableStock,

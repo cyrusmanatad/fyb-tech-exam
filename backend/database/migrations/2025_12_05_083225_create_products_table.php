@@ -14,26 +14,38 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            // $table->foreignId('category_id')->nullable()->constrained()->nullOnDelete();
+            $table->string('base_sku')->unique();
+            $table->string('title');
+            $table->text('description');
             $table->string('slug')->unique();
-            $table->string('status')->default('draft');
+            $table->enum('status', ['published','out-of-stock','inactive','draft'])->default('draft');
             $table->timestamps();
             $table->softDeletes();
+        });
+
+        Schema::create('product_options', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('product_id')->constrained()->cascadeOnDelete();
+            $table->string('name');
+            $table->json('values');
+            $table->timestamps();
         });
 
         Schema::create('product_variants', function (Blueprint $table) {
             $table->id();
             $table->foreignId('product_id')->constrained()->cascadeOnDelete();
-            $table->string('sku')->unique()->nullable();
-            $table->string('desc');
-            $table->text('desc_long');
+            $table->string('sku')->unique();
             $table->string('uom');
             $table->decimal('price', 12, 2);
             $table->decimal('sale_price', 12, 2)->nullable();
             $table->string('currency', 10)->default('PHP');
             $table->boolean('is_active')->default(true);
+            $table->json('attributes')->nullable();
             $table->timestamps();
             $table->softDeletes();
+
+            $table->string('attributes_hash')->storedAs('md5(attributes)');
+            $table->unique(['product_id', 'attributes_hash']);
         });
 
         Schema::create('inventories', function (Blueprint $table) {
