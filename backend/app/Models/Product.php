@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
@@ -34,6 +35,18 @@ class Product extends Model
     public function variants()
     {
         return $this->hasMany(ProductVariant::class);
+    }
+
+    public function inventories(): HasManyThrough
+    {
+        return $this->hasManyThrough(
+            Inventory::class,       // final model
+            ProductVariant::class,  // intermediate model
+            'product_id',           // FK on variants table
+            'variant_id',           // FK on inventories table
+            'id',                   // PK on products table
+            'id'                    // PK on variants table
+        );
     }
 
     public function category()

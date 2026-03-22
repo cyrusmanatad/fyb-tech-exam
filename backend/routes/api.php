@@ -5,6 +5,7 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ForumController;
 use App\Http\Controllers\ForumCommentController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProductInventoryController;
 use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
@@ -29,5 +30,12 @@ Route::prefix('v1')->group(function () {
         Route::apiResource('forums.comments', ForumCommentController::class);
 
         Route::get('categories', [CategoryController::class, 'index']);
+
+        Route::prefix('inventory')->group(function () {
+            Route::get('total',       [ProductInventoryController::class, 'total']);
+            Route::get('sales',       [ProductInventoryController::class, 'sales']);
+            Route::get('stocks',      [ProductInventoryController::class, 'stocks']);
+            Route::get('unavailable', [ProductInventoryController::class, 'unavailable']);
+        });
     });
 });

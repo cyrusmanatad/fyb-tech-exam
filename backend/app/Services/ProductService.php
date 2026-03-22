@@ -158,4 +158,32 @@ class ProductService
 
         return $variants;
     }
+
+    public function baseQuery(): \Illuminate\Database\Eloquent\Builder
+    {
+        return Product::query()
+            ->select(['id', 'user_id', 'category_id', 'title', 'slug', 'status', 'created_at'])
+            ->with([
+                'user:id,name,email',
+                'category:id,name',
+                'variants:id,product_id,sku,uom,price,sale_price,currency,is_active',
+                'variants.inventory:id,variant_id,stock_quantity,reserved_quantity',
+            ])
+            ->withSum('inventories as total_stock', 'stock_quantity')
+            ->withSum('inventories as total_reserved', 'reserved_quantity')
+            ->orderByDesc('created_at');
+    }
+
+    public function applySearch(
+        \Illuminate\Database\Eloquent\Builder $query,
+        string $search
+    ): \Illuminate\Database\Eloquent\Builder {
+        return $query->where(function ($q) use ($search) {
+            $q->where('slug', 'like', "%{$search}%")
+            ->orWhereHas('variants', fn($q2) =>
+                $q2->where('sku', 'like', "%{$search}%")
+                    ->orWhere('desc', 'like', "%{$search}%")
+            );
+        });
+    }
 }
