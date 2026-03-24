@@ -30,6 +30,18 @@ class ProductController extends Controller
         ])
         ->orderByDesc('created_at');
 
+        
+        if($request->filled('status')){
+            $query->where('status', $request->status);
+        }
+
+        if($request->filled('category')){
+            $categories = $request->category;
+            $query->whereHas('category', function($q) use($categories) {
+                $q->whereIn('id', $categories);
+            });
+        }
+
         if ($request->filled('search')) {
             $search = $request->search;
 
