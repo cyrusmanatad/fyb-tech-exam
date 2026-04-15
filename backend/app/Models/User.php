@@ -23,6 +23,9 @@ class User extends Authenticatable implements JWTSubject
         'name',
         'email',
         'password',
+        'is_active',
+        'last_login_at',
+        'last_login_ip',
     ];
 
     /**
@@ -45,12 +48,18 @@ class User extends Authenticatable implements JWTSubject
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'last_login_at' => 'datetime',
         ];
     }
 
     public function products()
     {
         return $this->hasMany(Product::class);
+    }
+
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
     }
 
     public function reviews()
@@ -66,6 +75,11 @@ class User extends Authenticatable implements JWTSubject
     public function comments()
     {
         return $this->hasMany(ForumsComment::class);
+    }
+
+    public function logins()
+    {
+        return $this->hasMany(UserLogin::class);
     }
 
     /**

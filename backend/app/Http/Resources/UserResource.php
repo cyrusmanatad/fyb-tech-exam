@@ -21,6 +21,10 @@ class UserResource extends JsonResource
             'roles'       => $this->getRoleNames(),              // ['admin', 'support']
             'permissions' => $this->getAllPermissions()
                                   ->pluck('name'),               // ['edit products', ...]
+            'login' => $this->last_login_at?->diffForHumans() ?? "Long time ago.",
+            // 'last_login_ip' => $this->last_login_ip,
+            'status' => 'Active',
+            'color' => 'green',
             'created_at'  => $this->created_at->toDateTimeString(),
         ];
     }

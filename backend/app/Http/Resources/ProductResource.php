@@ -29,6 +29,7 @@ class ProductResource extends JsonResource
         $firstVariant = $this->variants->first();
         $variants = $this->variants->map(function ($variant) {
             return [
+                'id' => $variant->id,
                 'sku' => $variant->sku,
                 'price' => $variant->price,
                 'sale_price' => $variant->sale_price,
