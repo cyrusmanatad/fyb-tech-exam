@@ -2,8 +2,11 @@
 
 namespace App\Providers;
 
+use Illuminate\Auth\Events\Login;
+use App\Listeners\LogUserLogin;
 use App\Models\Product;
 use App\Observers\ProductVariantObserver;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -30,5 +33,6 @@ class AppServiceProvider extends ServiceProvider
          });
 
          Product::observe(ProductVariantObserver::class);
+         Event::listen(Login::class, LogUserLogin::class);
     }
 }
