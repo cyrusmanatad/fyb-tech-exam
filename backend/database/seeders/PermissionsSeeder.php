@@ -26,14 +26,28 @@ class PermissionsSeeder extends Seeder
         $permissions = [
             'create products',
             'view products',
-            'edit all products',
-            'edit own products',
-            'delete all products',
-            'delete own products',
-            'publish all products',
-            'publish own products',
-            'unpublish all products',
-            'unpublish own products',
+            'edit products',
+            'delete products',
+            'create orders',
+            'view orders',
+            'edit orders',
+            'delete orders',
+            'create customers',
+            'view customers',
+            'edit customers',
+            'delete customers',
+            'create analytics',
+            'view analytics',
+            'edit analytics',
+            'delete analytics',
+            'create users',
+            'view users',
+            'edit users',
+            'delete users',
+            'create roles-permission',
+            'view roles-permission',
+            'edit roles-permission',
+            'delete roles-permission',
         ];
 
         foreach ($permissions as $permission) {
@@ -45,20 +59,20 @@ class PermissionsSeeder extends Seeder
         // $role1->givePermissionTo(['create products', 'view products', 'edit own products', 'delete own products', 'publish own products', 'unpublish own products']);
 
         // Access to inbox, customers, products
-        $role1 = Role::create(['name' => 'Support', 'guard_name' => $guardName]);
-        $role1->givePermissionTo(['view products', 'publish all products', 'unpublish all products']);
+        $role1 = Role::create(['name' => 'Support', 'description' => 'Support staff', 'guard_name' => $guardName]);
+        $role1->givePermissionTo(['view products', 'view customers', 'view orders']);
 
         // Manage products and stock
-        $role2 = Role::create(['name' => 'Inventory Staff', 'guard_name' => $guardName]);
-        $role2->givePermissionTo(['create products', 'view products', 'edit all products', 'delete all products']);
+        $role2 = Role::create(['name' => 'Inventory Staff', 'description' => 'Inventory staff', 'guard_name' => $guardName]);
+        $role2->givePermissionTo(['create products', 'view products', 'edit products', 'delete products']);
 
         // Can manage shop items and orders
-        $role3 = Role::create(['name' => 'Admin', 'guard_name' => $guardName]);
-        $role3->givePermissionTo(['create products', 'view products', 'edit all products', 'delete all products', 'publish all products', 'unpublish all products']);
+        $role3 = Role::create(['name' => 'Admin', 'description' => 'System administrator', 'guard_name' => $guardName]);
+        $role3->givePermissionTo(['create products', 'view products', 'edit products', 'delete products', 'create orders', 'view orders', 'edit orders', 'delete orders']);
 
         // Full system access
-        $role4 = Role::create(['name' => 'Super Admin', 'guard_name' => $guardName]);
-        $role4->givePermissionTo(['create products', 'view products', 'edit all products', 'delete all products', 'publish all products', 'unpublish all products']);
+        $role4 = Role::create(['name' => 'Super Admin', 'description' => 'Super administrator', 'guard_name' => $guardName]);
+        $role4->givePermissionTo(['create products', 'view products', 'edit products', 'delete products', 'create orders', 'view orders', 'edit orders', 'delete orders', 'create customers', 'view customers', 'edit customers', 'delete customers', 'create analytics', 'view analytics', 'edit analytics', 'delete analytics', 'create users', 'view users', 'edit users', 'delete users', 'create roles-permission', 'view roles-permission', 'edit roles-permission', 'delete roles-permission']);
         // gets all permissions via Gate::before rule; see AppServiceProvider
         
         // Support
