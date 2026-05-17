@@ -1,0 +1,3 @@
+[submodule "bentador"]
+	path = bentador
+	url = https://github.com/cyrusmanatad/bentador.git
