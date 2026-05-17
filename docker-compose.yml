@@ -19,11 +19,11 @@ services:
     stdin_open: true
     container_name: frontend
     build:
-      context: ./frontend
+      context: ./bentador
       dockerfile: Dockerfile
     volumes:
       - /app/node_modules
-      - ./frontend:/var/www/html/
+      - ./bentador:/var/www/html/
     networks:
       - app-network
 
