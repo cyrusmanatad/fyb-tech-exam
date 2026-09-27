@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import axios from '@/utils/axios' // axios.js file
 import { useCategoryStore } from './category'
 import { ref } from 'vue'
-import type { Credentials, PasswordForm, ProfileForm, User } from '@/types/auth'
+import type { Credentials, PasswordForm, ProfileForm, RegisterPayload, User } from '@/types/auth'
 import router from '@/router'
 
 export const useAuthStore = defineStore('auth', () => {
@@ -12,27 +12,41 @@ export const useAuthStore = defineStore('auth', () => {
   const loading = ref(false)
   const status = ref(200)
   const loginError = ref('')
+  const registerError = ref('')
+  const registerFieldErrors = ref<Record<string, string[]>>({})
 
   const clearLoginError = () => {
     loginError.value = ''
   }
 
-  const login = async (credentials: Credentials) => {
+  const clearRegisterError = () => {
+    registerError.value = ''
+    registerFieldErrors.value = {}
+  }
+
+  const storeToken = (token: string) => {
+    accessToken.value = token
+    localStorage.setItem('auth_token', token)
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`
+  }
+
+  const login = async (credentials: Credentials, options?: { redirect?: boolean }) => {
     clearLoginError()
 
     try {
       const { data } = await axios.post('/api/v1/auth/login', credentials)
 
-      accessToken.value = data.authorization.access_token || null
-
-      localStorage.setItem('auth_token', accessToken.value)
-
-      axios.defaults.headers.common['Authorization'] = `Bearer ${accessToken.value}`
+      storeToken(data.authorization.access_token || '')
 
       await fetchUser()
 
+      if (options?.redirect === false) {
+        return true
+      }
+
       const redirect = router.currentRoute.value.query.redirect as string
       router.push(redirect || { name: 'order-entry' })
+      return true
     } catch (error: unknown) {
       accessToken.value = ''
       const message = axios.isAxiosError(error) ? error.response?.data?.message : ''
@@ -40,6 +54,39 @@ export const useAuthStore = defineStore('auth', () => {
         typeof message === 'string' && message !== ''
           ? message
           : 'Sign-in did not complete. Try again.'
+      return false
+    }
+  }
+
+  const register = async (payload: RegisterPayload, options?: { redirect?: boolean }) => {
+    clearRegisterError()
+
+    try {
+      const { data } = await axios.post('/api/v1/auth/register', payload)
+
+      storeToken(data.authorization.access_token || '')
+
+      await fetchUser()
+
+      if (options?.redirect !== false) {
+        router.push({ name: 'order-entry' })
+      }
+
+      return true
+    } catch (error: unknown) {
+      accessToken.value = ''
+
+      if (axios.isAxiosError(error) && error.response?.status === 422) {
+        const errors = error.response.data?.errors
+        registerFieldErrors.value =
+          errors && typeof errors === 'object' ? (errors as Record<string, string[]>) : {}
+        const message = error.response.data?.message
+        registerError.value =
+          typeof message === 'string' && message !== '' ? message : 'Check the form and try again.'
+      } else {
+        registerError.value = 'Account was not created. Try again.'
+      }
+
       return false
     }
   }
@@ -106,8 +153,12 @@ export const useAuthStore = defineStore('auth', () => {
     loading,
     status,
     loginError,
+    registerError,
+    registerFieldErrors,
     clearLoginError,
+    clearRegisterError,
     login,
+    register,
     fetchUser,
     hasRole,
     hasPermission,

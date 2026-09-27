@@ -28,6 +28,7 @@ const emit = defineEmits<{
   (e: 'update:sortBy', value: string): void
   (e: 'open-sidebar'): void
   (e: 'logout'): void
+  (e: 'sign-in'): void
 }>()
 
 const uiStore = useUiStore()
@@ -130,8 +131,17 @@ const userOpen = ref(false)
 
         <div class="h-8 w-[1px] bg-gray-200 dark:bg-dark-border mx-1 hidden sm:block"></div>
 
+        <button
+          v-if="!authStore.user"
+          type="button"
+          class="min-h-11 px-4 py-2.5 bg-white dark:bg-dark-card border border-gray-200 dark:border-dark-border text-gray-900 dark:text-white rounded-xl text-xs font-black hover:border-teal-500 hover:text-teal-600 dark:hover:text-teal-400 transition active:scale-95"
+          @click="emit('sign-in')"
+        >
+          Sign in
+        </button>
+
         <!-- User Profile Dropdown -->
-        <div class="relative">
+        <div v-else class="relative">
           <button
             type="button"
             class="flex items-center gap-3 p-1 rounded-2xl hover:bg-gray-100 dark:hover:bg-slate-800 transition active:scale-95"

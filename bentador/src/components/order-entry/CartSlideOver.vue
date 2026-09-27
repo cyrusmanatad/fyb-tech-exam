@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useCartStore } from '@/stores/cart'
+import { useAuthStore } from '@/stores/auth'
 import CheckoutModal from '@/components/order-entry/CheckoutModal.vue'
 import {
   XMarkIcon,
@@ -12,12 +13,28 @@ import {
 } from '@heroicons/vue/24/outline'
 
 const cartStore = useCartStore()
+const authStore = useAuthStore()
 
 const isCheckoutModalOpen = ref(false)
 
-const handleCheckout = () => {
+const emit = defineEmits<{
+  (e: 'require-auth'): void
+}>()
+
+const openCheckout = () => {
   isCheckoutModalOpen.value = true
 }
+
+const handleCheckout = () => {
+  if (!authStore.user) {
+    emit('require-auth')
+    return
+  }
+
+  openCheckout()
+}
+
+defineExpose({ openCheckout })
 </script>
 
 <template>

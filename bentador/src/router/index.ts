@@ -23,20 +23,20 @@ const router = createRouter({
       meta: { guestOnly: true },
     },
     {
-      path: '/order-entry',
+      path: '/',
       name: 'order-entry',
       component: OrderEntryView,
-      meta: { requiresAuth: true, title: 'Order Entry' },
+      meta: { title: 'Order Entry' },
+    },
+    {
+      path: '/order-entry',
+      redirect: { name: 'order-entry' },
     },
     {
       path: '/',
       component: AppLayout,
       meta: { requiresAuth: true },
       children: [
-        {
-          path: '',
-          redirect: '/analytics',
-        },
         {
           path: 'analytics',
           name: 'analytics',
@@ -116,9 +116,10 @@ const router = createRouter({
 
 router.beforeEach(async (to) => {
   const auth = useAuthStore()
+  const token = localStorage.getItem('auth_token')
 
-  // Fetch user once, skip if already loaded
-  if (!auth.user) {
+  // A guest has no token, so the shop must not call /users/me.
+  if (!auth.user && token) {
     await auth.fetchUser()
   }
 

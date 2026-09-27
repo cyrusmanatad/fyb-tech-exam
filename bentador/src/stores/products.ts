@@ -84,6 +84,31 @@ export const useProductStore = defineStore('products', () => {
     }
   }
 
+  const fetchCatalogCategories = async () => {
+    try {
+      isLoading.value = true
+      const { data } = await axios.get(`/api/v1/catalog/categories`)
+      categories.value = data
+    } catch (error) {
+      console.error('Failed to fetch catalog categories', error)
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  const fetchCatalogProducts = async () => {
+    try {
+      isLoading.value = true
+      const { data } = await axios.get(`/api/v1/catalog/products`)
+      products.value = data.data
+      meta.value = data.meta
+    } catch (error) {
+      console.error('Failed to fetch catalog products', error)
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   const fetchCategories = async () => {
     try {
       isLoading.value = true
@@ -181,6 +206,8 @@ export const useProductStore = defineStore('products', () => {
     deleteAll,
     deleteProduct,
     exportCsv,
+    fetchCatalogCategories,
+    fetchCatalogProducts,
     fetchCategories,
     fetchProducts,
     fetchStatistics,

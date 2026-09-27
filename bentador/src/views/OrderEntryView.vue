@@ -8,6 +8,7 @@ import OrderHeader from '@/components/order-entry/OrderHeader.vue'
 import HeroBanner from '@/components/order-entry/HeroBanner.vue'
 import ProductCard from '@/components/order-entry/ProductCard.vue'
 import CartSlideOver from '@/components/order-entry/CartSlideOver.vue'
+import AuthModal from '@/components/order-entry/AuthModal.vue'
 import QuickViewModal from '@/components/order-entry/QuickViewModal.vue'
 import ToastNotifications from '@/components/order-entry/ToastNotifications.vue'
 import LogoutModal from '@/components/product/modals/LogoutModal.vue'
@@ -21,6 +22,9 @@ const toastStore = useToastStore()
 // State
 const isSidebarOpen = ref(false)
 const isQuickViewOpen = ref(false)
+const isAuthModalOpen = ref(false)
+const authContinuesToCheckout = ref(false)
+const cartPanel = ref<{ openCheckout: () => void } | null>(null)
 const selectedProduct = ref<Product | null>(null)
 
 // Filters
@@ -95,9 +99,21 @@ const handleLogout = () => {
   productStore.toggleModal('logout', true)
 }
 
+const openAuth = (continueToCheckout: boolean) => {
+  authContinuesToCheckout.value = continueToCheckout
+  isAuthModalOpen.value = true
+}
+
+const onAuthSuccess = () => {
+  isAuthModalOpen.value = false
+  if (authContinuesToCheckout.value) {
+    cartPanel.value?.openCheckout()
+  }
+}
+
 onMounted(async () => {
-  await productStore.fetchCategories()
-  await productStore.fetchProducts()
+  await productStore.fetchCatalogCategories()
+  await productStore.fetchCatalogProducts()
 })
 </script>
 
@@ -120,6 +136,7 @@ onMounted(async () => {
         v-model:sort-by="sortBy"
         @open-sidebar="isSidebarOpen = true"
         @logout="handleLogout"
+        @sign-in="openAuth(false)"
       />
 
       <div class="p-4 lg:p-8">
@@ -206,7 +223,14 @@ onMounted(async () => {
       </div>
     </main>
 
-    <CartSlideOver />
+    <CartSlideOver ref="cartPanel" @require-auth="openAuth(true)" />
+
+    <AuthModal
+      :show="isAuthModalOpen"
+      :purpose="authContinuesToCheckout ? 'checkout' : 'account'"
+      @close="isAuthModalOpen = false"
+      @success="onAuthSuccess"
+    />
 
     <QuickViewModal
       :show="isQuickViewOpen"
