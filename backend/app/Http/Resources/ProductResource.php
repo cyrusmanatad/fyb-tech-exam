@@ -33,7 +33,7 @@ class ProductResource extends JsonResource
                 'sku' => $variant->sku,
                 'price' => $variant->price,
                 'sale_price' => $variant->sale_price,
-                'attributes' => json_decode($variant->attributes, true), // decode JSON
+                'attributes' => $variant->attributes,
                 'stock' => $variant->inventory->stock_quantity ?? 0,
                 'reserved_quantity' => $variant->inventory->reserved_quantity ?? 0,
             ];

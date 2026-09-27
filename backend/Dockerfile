@@ -2,10 +2,9 @@ FROM php:8.5-fpm
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
-    sqlite3 \
-    libsqlite3-dev \
+    libpq-dev \
     zip unzip git \
-    && docker-php-ext-install pdo pdo_sqlite
+    && docker-php-ext-install pdo pdo_pgsql
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer

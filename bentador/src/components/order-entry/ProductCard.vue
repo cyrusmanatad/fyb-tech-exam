@@ -1,0 +1,102 @@
+<script setup lang="ts">
+import type { Product } from '@/types/data-types'
+import { PlusIcon, StarIcon } from '@heroicons/vue/24/solid'
+import { ShoppingCartIcon } from '@heroicons/vue/24/outline'
+import { rand } from '@vueuse/core'
+
+defineProps<{
+  product: Product
+  rating: number // temporary
+}>()
+
+const emit = defineEmits<{
+  (e: 'add-to-cart', product: Product): void
+  (e: 'quick-view', product: Product): void
+}>()
+</script>
+
+<template>
+  <div
+    class="bg-white dark:bg-dark-card rounded-3xl border border-gray-200 dark:border-dark-border shadow-sm hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group overflow-hidden flex flex-col cursor-pointer"
+    @click="emit('quick-view', product)"
+  >
+    <div class="relative aspect-[4/3] overflow-hidden bg-gray-50 dark:bg-slate-900/50">
+      <div
+        class="absolute inset-0 flex items-center justify-center opacity-10 group-hover:scale-110 transition-transform duration-700"
+      >
+        <!-- Icon Placeholder -->
+        <ShoppingCartIcon class="w-32 h-32 text-gray-400" />
+      </div>
+
+      <!-- Badges -->
+      <div class="absolute top-4 left-4 flex flex-col gap-2">
+        <span
+          class="px-3 py-1 bg-white/90 dark:bg-dark-card/90 backdrop-blur shadow-sm rounded-full text-[10px] font-black text-teal-600 dark:text-teal-400 uppercase tracking-widest"
+        >
+          {{ product.category }}
+        </span>
+        <span
+          v-if="product.stock === 0"
+          class="px-3 py-1 bg-red-500 text-white shadow-lg shadow-red-500/30 rounded-full text-[10px] font-black uppercase tracking-widest"
+        >
+          Out of Stock
+        </span>
+      </div>
+
+      <!-- Add Button Overlay -->
+      <div
+        class="absolute inset-0 bg-teal-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]"
+      >
+        <button
+          type="button"
+          :disabled="product.stock === 0"
+          class="w-14 h-14 bg-white text-teal-600 rounded-2xl shadow-2xl flex items-center justify-center transition duration-300"
+          :class="
+            product.stock === 0
+              ? 'cursor-not-allowed opacity-50'
+              : 'hover:scale-110 active:scale-95'
+          "
+          @click.stop="emit('add-to-cart', product)"
+        >
+          <PlusIcon class="w-7 h-7" />
+        </button>
+      </div>
+    </div>
+
+    <div class="p-6 flex-1 flex flex-col">
+      <div class="mb-4">
+        <h3
+          class="text-base font-bold text-gray-900 dark:text-white mb-1 group-hover:text-teal-500 transition-colors"
+        >
+          {{ product.title }}
+        </h3>
+        <div class="flex items-center gap-2">
+          <div class="flex text-orange-400">
+            <StarIcon v-for="i in rating" :key="i" class="w-3 h-3" />
+          </div>
+          <span class="text-[10px] font-bold text-gray-400"
+            >( {{ (rating !== 5 ? Math.random() + rating : rating).toFixed(2) }})</span
+          >
+        </div>
+      </div>
+
+      <div class="mt-auto flex items-center justify-between">
+        <div>
+          <p class="text-xs text-gray-400 font-medium">Price</p>
+          <p class="text-xl font-black text-gray-900 dark:text-white">
+            &#8369;{{ product.price.toLocaleString() }}
+          </p>
+        </div>
+        <div class="text-right">
+          <p
+            class="text-[10px] font-black uppercase tracking-widest"
+            :class="product.stock < 10 ? 'text-orange-500' : 'text-gray-400'"
+          >
+            {{ product.stock }} left
+          </p>
+          <p class="text-[9px] text-gray-400 font-bold">Fast Delivery</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

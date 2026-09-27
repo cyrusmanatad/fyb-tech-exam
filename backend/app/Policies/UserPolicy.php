@@ -19,11 +19,11 @@ class UserPolicy
      */
     public function update(User $user, User $target): bool
     {
-        // Super admin can update anyone
-        if ($user->hasRole('super-admin')) return true;
+        // Super Admin can update anyone. Gate::before also grants this role.
+        if ($user->hasRole(User::ROLE_SUPER_ADMIN)) return true;
 
-        // Admin cannot update another admin or super-admin
-        if ($target->hasRole(['admin', 'super-admin'])) return false;
+        // A user with "edit users" still cannot modify an Admin or Super Admin.
+        if ($target->hasRole([User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN])) return false;
 
         return $user->hasPermissionTo('edit users');
     }

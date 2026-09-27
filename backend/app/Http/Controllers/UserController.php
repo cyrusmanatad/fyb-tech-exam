@@ -104,8 +104,8 @@ class UserController extends Controller
 
         // Prevent changing Super Admin role unless you are Super Admin
         if (
-            $user->hasRole('Super Admin') &&
-            !auth()->user()->hasRole('Super Admin')
+            $user->hasRole(User::ROLE_SUPER_ADMIN) &&
+            !auth()->user()->hasRole(User::ROLE_SUPER_ADMIN)
         ) {
             return response()->json([
                 'message' => 'You are not authorized to change a Super Admin role.'
@@ -114,8 +114,8 @@ class UserController extends Controller
 
         // Prevent assigning Super Admin role unless you are Super Admin
         if (
-            $request->role === 'Super Admin' &&
-            !auth()->user()->hasRole('Super Admin')
+            $request->role === User::ROLE_SUPER_ADMIN &&
+            !auth()->user()->hasRole(User::ROLE_SUPER_ADMIN)
         ) {
             return response()->json([
                 'message' => 'You are not authorized to assign Super Admin role.'
@@ -161,8 +161,8 @@ class UserController extends Controller
 
         // Prevent deleting Super Admin unless you are Super Admin
         if (
-            $user->hasRole('Super Admin') &&
-            !$request->user()->hasRole('Super Admin')
+            $user->hasRole(User::ROLE_SUPER_ADMIN) &&
+            !$request->user()->hasRole(User::ROLE_SUPER_ADMIN)
         ) {
             return response()->json([
                 'message' => 'You are not authorized to delete a Super Admin.'
@@ -197,8 +197,8 @@ class UserController extends Controller
         ]);
         return response()->json([
             'data' => [
-                'total'=> User::role(['Admin', 'Super Admin','Support','Inventory Staff'])->count(),
-                'admin' => User::role(['Admin', 'Super Admin'])->count(),
+                'total'=> User::role([User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 'Support', 'Inventory Staff'])->count(),
+                'admin' => User::role([User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN])->count(),
                 'non_admin' => User::role(['Support', 'Inventory Staff'])->count(),
                 'active' => User::count(),
                 'by_role' => $roleCounts // standby not yet used
