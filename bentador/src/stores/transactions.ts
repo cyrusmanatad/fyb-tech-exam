@@ -77,7 +77,7 @@ export const useOrderStore = defineStore('order', () => {
     try {
       const payload = mapCartToPayload(cartItems, options)
 
-      const { data } = await axios.post('/api/v1/orders', payload)
+      const { data } = await axios.post('/api/v1/checkout', payload)
       return data
     } catch (err: unknown) {
       // Laravel validation errors

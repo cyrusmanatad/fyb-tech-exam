@@ -2,7 +2,9 @@
 
 use App\Http\Controllers\AnalyticsController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CatalogController;
 use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\ForumCommentController;
 use App\Http\Controllers\ForumController;
@@ -22,6 +24,9 @@ Route::prefix('v1')->group(function () {
         Route::post('register', [AuthController::class, 'register'])->middleware('throttle:5,1');
     });
 
+    Route::get('catalog/products', [CatalogController::class, 'products']);
+    Route::get('catalog/categories', [CatalogController::class, 'categories']);
+
     // Authenticated. Staff modules also require the matching seeded permission.
     Route::middleware(['api', 'auth:api'])->group(function () {
 
@@ -38,6 +43,7 @@ Route::prefix('v1')->group(function () {
 
         // Any authenticated account, including a customer with no role.
         Route::get('users/me', [AuthController::class, 'me']);
+        Route::post('checkout', [CheckoutController::class, 'store']);
 
         Route::middleware('permission:view users')->group(function () {
             Route::get('users/total', [UserController::class, 'total']);

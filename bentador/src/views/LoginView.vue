@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useUiStore } from '@/stores/ui'
 import {
   SunIcon,
@@ -14,6 +14,7 @@ import { useAuthStore } from '@/stores/auth'
 
 const uiStore = useUiStore()
 const router = useRouter()
+const route = useRoute()
 
 const email = ref('cyrusmanatad@bentadoor.com')
 const password = ref('Password@1234')
@@ -23,15 +24,22 @@ const auth = useAuthStore()
 const handleLogin = async () => {
   isLoading.value = true
 
-  const success = await auth.login({
-    email: email.value,
-    password: password.value,
-  })
+  const success = await auth.login(
+    {
+      email: email.value,
+      password: password.value,
+    },
+    { redirect: false },
+  )
 
   isLoading.value = false
 
   if (success) {
-    console.log(auth.user?.roles.length)
+    const redirect = route.query.redirect
+    if (typeof redirect === 'string' && redirect !== '') {
+      router.push(redirect)
+      return
+    }
 
     if (auth.user?.roles.length === 0 || auth.hasRole('Client')) {
       router.push({ name: 'order-entry' })

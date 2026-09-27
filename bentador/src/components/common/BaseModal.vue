@@ -4,6 +4,7 @@ import { onMounted, onUnmounted } from 'vue'
 const props = defineProps<{
   show: boolean
   maxWidth?: string
+  zIndexClass?: string
 }>()
 
 const emit = defineEmits(['close'])
@@ -37,7 +38,11 @@ onUnmounted(() => {
       leave-from-class="opacity-100"
       leave-to-class="opacity-0"
     >
-      <div v-if="show" class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+      <div
+        v-if="show"
+        class="fixed inset-0 flex items-center justify-center p-4"
+        :class="zIndexClass || 'z-[100]'"
+      >
         <!-- Backdrop -->
         <div 
           @click="close"
