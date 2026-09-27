@@ -178,7 +178,7 @@ const props = defineProps<{
                 @change="emit('update:inStockOnly', ($event.target as HTMLInputElement).checked)"
               />
               <div
-                class="w-11 h-6 bg-gray-200 dark:bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-500"
+                class="w-11 h-6 bg-gray-200 dark:bg-slate-800 rounded-full peer peer-focus-visible:ring-2 peer-focus-visible:ring-teal-700 peer-focus-visible:ring-offset-2 peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-teal-500"
               ></div>
             </div>
           </label>

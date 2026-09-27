@@ -11,8 +11,15 @@ export const useAuthStore = defineStore('auth', () => {
   const accessToken = ref('')
   const loading = ref(false)
   const status = ref(200)
+  const loginError = ref('')
+
+  const clearLoginError = () => {
+    loginError.value = ''
+  }
 
   const login = async (credentials: Credentials) => {
+    clearLoginError()
+
     try {
       const { data } = await axios.post('/api/v1/auth/login', credentials)
 
@@ -26,8 +33,13 @@ export const useAuthStore = defineStore('auth', () => {
 
       const redirect = router.currentRoute.value.query.redirect as string
       router.push(redirect || { name: 'order-entry' })
-    } catch {
+    } catch (error: unknown) {
       accessToken.value = ''
+      const message = axios.isAxiosError(error) ? error.response?.data?.message : ''
+      loginError.value =
+        typeof message === 'string' && message !== ''
+          ? message
+          : 'Sign-in did not complete. Try again.'
       return false
     }
   }
@@ -93,6 +105,8 @@ export const useAuthStore = defineStore('auth', () => {
     accessToken,
     loading,
     status,
+    loginError,
+    clearLoginError,
     login,
     fetchUser,
     hasRole,

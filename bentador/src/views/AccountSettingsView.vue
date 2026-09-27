@@ -42,7 +42,7 @@ const passwordErrors = reactive<PasswordFormErrors>({
 })
 
 const lastLogin = computed(() => {
-  if (!auth.user?.last_login_at) return auth.user?.login ?? '—'
+  if (!auth.user?.last_login_at) return auth.user?.login ?? 'Not set'
   return new Date(auth.user.last_login_at).toLocaleString('en-US', {
     month: 'short',
     day: 'numeric',
@@ -155,7 +155,7 @@ onMounted(async () => {
           <div class="p-4 rounded-2xl bg-gray-50 dark:bg-slate-800/40">
             <dt class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">IP Address</dt>
             <dd class="text-sm font-semibold text-gray-900 dark:text-white mt-1">
-              {{ auth.user?.last_login_ip ?? '—' }}
+              {{ auth.user?.last_login_ip ?? 'Not set' }}
             </dd>
           </div>
           <div class="p-4 rounded-2xl bg-gray-50 dark:bg-slate-800/40">
@@ -167,7 +167,7 @@ onMounted(async () => {
           <div class="p-4 rounded-2xl bg-gray-50 dark:bg-slate-800/40">
             <dt class="text-[11px] font-bold text-gray-400 uppercase tracking-wider">Role</dt>
             <dd class="text-sm font-semibold text-gray-900 dark:text-white mt-1">
-              {{ auth.user?.roles[0] ?? '—' }}
+              {{ auth.user?.roles[0] ?? 'Not set' }}
             </dd>
           </div>
         </dl>
@@ -271,6 +271,55 @@ onMounted(async () => {
         </div>
 
         <div class="space-y-3">
+          <fieldset
+            class="p-4 rounded-2xl border border-gray-100 dark:border-dark-border"
+          >
+            <legend class="text-sm font-semibold text-gray-900 dark:text-white">Color theme</legend>
+            <p class="text-[11px] text-gray-400 mt-1">
+              Green is the previous accent. Blue is the current palette.
+            </p>
+            <div class="mt-3 flex flex-wrap gap-2" role="radiogroup" aria-label="Color theme">
+              <label
+                class="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border px-4 text-sm font-semibold has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-teal-700"
+                :class="
+                  uiStore.colorTheme === 'green'
+                    ? 'border-gray-900 text-gray-900 dark:border-white dark:text-white'
+                    : 'border-gray-200 text-gray-600 dark:border-dark-border dark:text-slate-300'
+                "
+              >
+                <input
+                  type="radio"
+                  name="color-theme"
+                  value="green"
+                  class="sr-only"
+                  :checked="uiStore.colorTheme === 'green'"
+                  @change="uiStore.setColorTheme('green')"
+                />
+                <span class="h-4 w-4 rounded-full" style="background: #0d9488"></span>
+                Green
+              </label>
+              <label
+                class="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-xl border px-4 text-sm font-semibold has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-teal-700"
+                :class="
+                  uiStore.colorTheme === 'blue'
+                    ? 'border-gray-900 text-gray-900 dark:border-white dark:text-white'
+                    : 'border-gray-200 text-gray-600 dark:border-dark-border dark:text-slate-300'
+                "
+              >
+                <input
+                  type="radio"
+                  name="color-theme"
+                  value="blue"
+                  class="sr-only"
+                  :checked="uiStore.colorTheme === 'blue'"
+                  @change="uiStore.setColorTheme('blue')"
+                />
+                <span class="h-4 w-4 rounded-full" style="background: #266ca9"></span>
+                Blue
+              </label>
+            </div>
+          </fieldset>
+
           <label
             class="flex items-center justify-between p-4 rounded-2xl border border-gray-100 dark:border-dark-border cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-800/30 transition"
           >

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useUiStore } from '@/stores/ui'
 import { useCartStore } from '@/stores/cart'
 import { useAuthStore } from '@/stores/auth'
@@ -34,8 +34,9 @@ const uiStore = useUiStore()
 const cartStore = useCartStore()
 const authStore = useAuthStore()
 
-const icon = ref(
-  `https://ui-avatars.com/api/?name=${authStore.user?.name}&background=0D9488&color=fff`,
+const icon = computed(
+  () =>
+    `https://ui-avatars.com/api/?name=${authStore.user?.name}&background=${uiStore.avatarBackground}&color=fff`,
 )
 
 const userOpen = ref(false)
@@ -137,7 +138,7 @@ const userOpen = ref(false)
             @click.stop="userOpen = !userOpen"
           >
             <div
-              class="w-10 h-10 rounded-xl bg-gradient-to-tr from-teal-500 to-emerald-400 p-[2px] shadow-lg shadow-teal-500/20"
+              class="w-10 h-10 rounded-xl bg-gradient-to-tr from-teal-600 to-teal-500 p-[2px] shadow-lg shadow-teal-500/20"
             >
               <img
                 :src="icon"

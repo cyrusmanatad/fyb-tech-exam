@@ -106,7 +106,11 @@ const handleLogin = async () => {
                   v-model="email"
                   type="email"
                   required
+                  autocomplete="username"
+                  :aria-invalid="auth.loginError ? true : undefined"
+                  :aria-describedby="auth.loginError ? 'login-error' : undefined"
                   class="w-full pl-12 pr-4 py-4 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-dark-border rounded-2xl text-sm font-bold focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 dark:text-white outline-none transition-all"
+                  @input="auth.clearLoginError()"
                 />
               </div>
             </div>
@@ -132,7 +136,11 @@ const handleLogin = async () => {
                   v-model="password"
                   type="password"
                   required
+                  autocomplete="current-password"
+                  :aria-invalid="auth.loginError ? true : undefined"
+                  :aria-describedby="auth.loginError ? 'login-error' : undefined"
                   class="w-full pl-12 pr-4 py-4 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-dark-border rounded-2xl text-sm font-bold focus:ring-4 focus:ring-teal-500/10 focus:border-teal-500 dark:text-white outline-none transition-all"
+                  @input="auth.clearLoginError()"
                 />
               </div>
             </div>
@@ -148,6 +156,15 @@ const handleLogin = async () => {
                 >Keep me signed in</span
               >
             </label>
+
+            <p
+              v-if="auth.loginError"
+              id="login-error"
+              role="alert"
+              class="text-sm text-red-500"
+            >
+              {{ auth.loginError }}
+            </p>
 
             <!-- Sign In Button -->
             <button

@@ -212,7 +212,7 @@
 
   <!-- Footer -->
   <div class="footer">
-    <span>Confidential — Internal Use Only</span>
+    <span>Confidential, internal use only</span>
     <span> &copy; {{ now()->year }}</span>
   </div>
 

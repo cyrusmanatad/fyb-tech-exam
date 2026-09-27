@@ -3,9 +3,30 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
+  /* Green theme keeps Tailwind teal. These are the original dark surfaces. */
   --color-dark-bg: #020617;
   --color-dark-card: #0f172a;
   --color-dark-border: #1e293b;
+}
+
+/* Blue palette. Class names stay teal-* so existing utilities follow the active theme. */
+.theme-blue {
+  --color-teal-50: #ade1fb;
+  --color-teal-100: #ade1fb;
+  --color-teal-200: #266ca9;
+  --color-teal-300: #ade1fb;
+  --color-teal-400: #ade1fb;
+  --color-teal-500: #266ca9;
+  --color-teal-600: #0f2573;
+  --color-teal-700: #041d56;
+  --color-teal-800: #01082d;
+  --color-teal-900: #01082d;
+  --color-teal-950: #01082d;
+
+  --color-dark-bg: #01082d;
+  --color-dark-card: #041d56;
+  /* #69A6D2 on #041D56 is 6.07:1 and reads as a stroke. #3175B0 is #266CA9 nudged toward #ADE1FB, 3.27:1 on the card. */
+  --color-dark-border: #3175b0;
 }
 
 @layer base {
@@ -16,6 +37,62 @@
 }
 
 @layer utilities {
+  /*
+   * gray-400 on white is 2.54:1. These shifts keep muted text at AA:
+   * gray-600 on white is 7.56:1, slate-400 on #041D56 is 6.23:1.
+   * green-500, red-500, and orange-500 on white also sit under 4.5:1.
+   * :where() keeps hover and focus utilities more specific than these colors.
+   */
+  .text-gray-400 {
+    color: #4b5563;
+  }
+  .text-gray-400:where(.dark, .dark *) {
+    color: #94a3b8;
+  }
+  .dark\:text-slate-500:where(.dark, .dark *) {
+    color: #94a3b8;
+  }
+  .text-green-500 {
+    color: #15803d;
+  }
+  .text-green-500:where(.dark, .dark *) {
+    color: #4ade80;
+  }
+  .text-red-500 {
+    color: #b91c1c;
+  }
+  .text-red-500:where(.dark, .dark *) {
+    color: #fca5a5;
+  }
+  .text-orange-500 {
+    color: #c2410c;
+  }
+  .text-orange-500:where(.dark, .dark *) {
+    color: #fb923c;
+  }
+
+  /* #041D56 on #01082D is 1.43:1, so the blue theme focus ring switches to ice in dark mode. */
+  :where(.theme-blue.dark, .theme-blue.dark *) .focus-visible\:outline-teal-700:focus-visible {
+    outline-color: #ade1fb;
+  }
+  :where(.theme-blue.dark, .theme-blue.dark *) .peer-focus-visible\:ring-teal-700 {
+    --tw-ring-color: #ade1fb;
+  }
+
+  /* #266CA9 on #041D56 is 2.89:1, so blue-theme accent text and focus borders use ice in dark mode. */
+  :where(.theme-blue.dark, .theme-blue.dark *) .text-teal-500 {
+    color: #ade1fb;
+  }
+  :where(.theme-blue.dark, .theme-blue.dark *) .hover\:text-teal-500:hover {
+    color: #ade1fb;
+  }
+  :where(.theme-blue.dark, .theme-blue.dark *) .group:hover .group-hover\:text-teal-500 {
+    color: #ade1fb;
+  }
+  :where(.theme-blue.dark, .theme-blue.dark *) .focus\:border-teal-500:focus {
+    border-color: #ade1fb;
+  }
+
   .custom-scrollbar::-webkit-scrollbar {
     width: 4px;
   }
@@ -25,5 +102,8 @@
   }
   .dark .custom-scrollbar::-webkit-scrollbar-thumb {
     background: #334155;
+  }
+  .theme-blue.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #3175b0;
   }
 }

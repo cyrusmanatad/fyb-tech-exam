@@ -5,7 +5,7 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useUiStore } from '@/stores/ui'
 import { useProductStore } from '@/stores/products'
 import {
@@ -34,7 +34,10 @@ const myShopOpen = ref(true)
 const accessManagementOpen = ref(false)
 const userMenuOpen = ref(false)
 
-const icon = ref(`https://ui-avatars.com/api/?name=${auth.user?.name}&background=0D9488&color=fff`)
+const icon = computed(
+  () =>
+    `https://ui-avatars.com/api/?name=${auth.user?.name}&background=${uiStore.avatarBackground}&color=fff`,
+)
 
 const handleLogout = () => {
   productStore.toggleModal('logout', true)
@@ -60,7 +63,8 @@ const handleLogout = () => {
       </div>
       <button
         @click="uiStore.setSidebar(false)"
-        class="lg:hidden p-1 text-gray-400 hover:text-gray-600 transition"
+        class="lg:hidden inline-flex min-h-11 min-w-11 items-center justify-center text-gray-400 hover:text-gray-600 transition"
+        aria-label="Close menu"
         type="button"
       >
         <XMarkIcon class="w-6 h-6" />
@@ -73,7 +77,7 @@ const handleLogout = () => {
       </p>
       <router-link
         to="/analytics"
-        class="flex items-center gap-3 px-3 py-2 text-gray-500 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800/50 rounded-lg text-sm transition"
+        class="flex items-center gap-3 min-h-11 px-3 py-2 text-gray-500 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800/50 rounded-lg text-sm transition"
         active-class="bg-gray-50 dark:bg-slate-800/50 text-teal-600 dark:text-teal-400"
       >
         <HomeIcon class="w-4 h-4" /> Home
@@ -82,7 +86,7 @@ const handleLogout = () => {
       <div>
         <button
           @click="myShopOpen = !myShopOpen"
-          class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition"
+          class="w-full flex items-center justify-between min-h-11 px-3 py-2 rounded-lg text-sm font-medium transition"
           :class="
             myShopOpen
               ? 'text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-500/10'
@@ -98,29 +102,29 @@ const handleLogout = () => {
         </button>
         <div
           v-show="myShopOpen"
-          class="pl-10 space-y-1 mt-1 border-l-2 border-teal-100 dark:border-teal-900/50 ml-5"
+          class="pl-10 space-y-1 mt-1 border-l-2 border-teal-500 dark:border-dark-border ml-5"
         >
           <router-link
             to="/products"
-            class="block py-2 text-sm text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white transition"
+            class="flex items-center min-h-11 py-2 text-sm text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white transition"
             active-class="text-teal-600 dark:text-teal-400 font-bold"
             >Products</router-link
           >
           <router-link
             to="/order-entry"
-            class="block py-2 text-sm text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white transition"
+            class="flex items-center min-h-11 py-2 text-sm text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white transition"
             active-class="text-teal-600 dark:text-teal-400 font-bold"
             >Order Entry</router-link
           >
           <router-link
             to="/orders"
-            class="block py-2 text-sm text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white transition"
+            class="flex items-center min-h-11 py-2 text-sm text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white transition"
             active-class="text-teal-600 dark:text-teal-400 font-bold"
             >Sales Transactions</router-link
           >
           <router-link
             to="/customers"
-            class="block py-2 text-sm text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white transition"
+            class="flex items-center min-h-11 py-2 text-sm text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white transition"
             active-class="text-teal-600 dark:text-teal-400 font-bold"
             >Customers</router-link
           >
@@ -132,14 +136,14 @@ const handleLogout = () => {
       </p>
       <router-link
         to="/analytics"
-        class="flex items-center gap-3 px-3 py-2 text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white rounded-lg text-sm transition"
+        class="flex items-center gap-3 min-h-11 px-3 py-2 text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white rounded-lg text-sm transition"
         active-class="text-teal-600 dark:text-teal-400 font-bold"
       >
         <ChartBarIcon class="w-4 h-4" /> Analytics
       </router-link>
       <router-link
         to="/inbox"
-        class="flex items-center gap-3 px-3 py-2 text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white rounded-lg text-sm transition"
+        class="flex items-center gap-3 min-h-11 px-3 py-2 text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white rounded-lg text-sm transition"
         active-class="text-teal-600 dark:text-teal-400 font-bold"
       >
         <EnvelopeIcon class="w-4 h-4" /> Inbox
@@ -148,7 +152,7 @@ const handleLogout = () => {
       <div class="mt-2">
         <button
           @click="accessManagementOpen = !accessManagementOpen"
-          class="w-full flex items-center justify-between px-3 py-2 text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white rounded-lg text-sm transition font-medium"
+          class="w-full flex items-center justify-between min-h-11 px-3 py-2 text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white rounded-lg text-sm transition font-medium"
           :class="
             accessManagementOpen
               ? 'text-teal-600 dark:text-teal-400 bg-teal-50 dark:bg-teal-500/10'
@@ -166,17 +170,17 @@ const handleLogout = () => {
         </button>
         <div
           v-show="accessManagementOpen"
-          class="pl-10 space-y-1 mt-1 border-l-2 border-teal-100 dark:border-teal-900/50 ml-5"
+          class="pl-10 space-y-1 mt-1 border-l-2 border-teal-500 dark:border-dark-border ml-5"
         >
           <router-link
             to="/users"
-            class="block py-2 text-sm text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white transition"
+            class="flex items-center min-h-11 py-2 text-sm text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white transition"
             active-class="text-teal-600 dark:text-teal-400 font-bold"
             >Users</router-link
           >
           <router-link
             to="/roles-permission"
-            class="block py-2 text-sm text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white transition"
+            class="flex items-center min-h-11 py-2 text-sm text-gray-500 dark:text-slate-400 hover:text-gray-900 dark:hover:text-white transition"
             active-class="text-teal-600 dark:text-teal-400 font-bold"
             >Roles & Permission</router-link
           >
@@ -223,14 +227,14 @@ const handleLogout = () => {
             <router-link
               :to="{ name: 'profile-settings' }"
               @click="userMenuOpen = false"
-              class="flex items-center gap-3 px-3 py-2 text-sm text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800 rounded-lg transition"
+              class="flex items-center gap-3 min-h-11 px-3 py-2 text-sm text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800 rounded-lg transition"
             >
               <UserIcon class="w-4 h-4" /> Profile Settings
             </router-link>
             <router-link
               :to="{ name: 'account-settings' }"
               @click="userMenuOpen = false"
-              class="flex items-center gap-3 px-3 py-2 text-sm text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800 rounded-lg transition"
+              class="flex items-center gap-3 min-h-11 px-3 py-2 text-sm text-gray-600 dark:text-slate-400 hover:bg-gray-50 dark:hover:bg-slate-800 rounded-lg transition"
             >
               <Cog6ToothIcon class="w-4 h-4" /> Account Settings
             </router-link>
@@ -238,7 +242,7 @@ const handleLogout = () => {
             <!-- Dark Mode Toggle Inside Dropdown -->
             <button
               @click="uiStore.toggleDarkMode"
-              class="w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-all group hover:bg-gray-50 dark:hover:bg-slate-800"
+              class="w-full flex items-center justify-between min-h-11 px-3 py-2 rounded-lg text-sm font-medium transition-all group hover:bg-gray-50 dark:hover:bg-slate-800"
               type="button"
             >
               <div class="flex items-center gap-3 text-gray-600 dark:text-slate-400">
@@ -259,7 +263,7 @@ const handleLogout = () => {
 
             <button
               @click="handleLogout"
-              class="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition"
+              class="w-full flex items-center gap-3 min-h-11 px-3 py-2 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-lg transition"
               type="button"
             >
               <ArrowRightEndOnRectangleIcon class="w-4 h-4" /> Logout
