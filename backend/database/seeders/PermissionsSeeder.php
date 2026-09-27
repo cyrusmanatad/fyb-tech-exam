@@ -51,7 +51,7 @@ class PermissionsSeeder extends Seeder
         ];
 
         foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission, 'guard_name' => $guardName]);
+            Permission::firstOrCreate(['name' => $permission, 'guard_name' => $guardName]);
         }
 
         // Access to own inbox, own customers, own products
@@ -59,60 +59,54 @@ class PermissionsSeeder extends Seeder
         // $role1->givePermissionTo(['create products', 'view products', 'edit own products', 'delete own products', 'publish own products', 'unpublish own products']);
 
         // Access to inbox, customers, products
-        $role1 = Role::create(['name' => 'Support', 'desc' => 'Support staff', 'guard_name' => $guardName]);
-        $role1->givePermissionTo(['view products', 'view customers', 'view orders']);
+        $role1 = Role::firstOrCreate(
+            ['name' => 'Support', 'guard_name' => $guardName],
+            ['desc' => 'Support staff'],
+        );
+        $role1->syncPermissions(['view products', 'view customers', 'view orders']);
 
         // Manage products and stock
-        $role2 = Role::create(['name' => 'Inventory Staff', 'desc' => 'Inventory staff', 'guard_name' => $guardName]);
-        $role2->givePermissionTo(['create products', 'view products', 'edit products', 'delete products']);
+        $role2 = Role::firstOrCreate(
+            ['name' => 'Inventory Staff', 'guard_name' => $guardName],
+            ['desc' => 'Inventory staff'],
+        );
+        $role2->syncPermissions(['create products', 'view products', 'edit products', 'delete products']);
 
         // Can manage shop items and orders
-        $role3 = Role::create(['name' => User::ROLE_ADMIN, 'desc' => 'System administrator', 'guard_name' => $guardName]);
-        $role3->givePermissionTo(['create products', 'view products', 'edit products', 'delete products', 'create orders', 'view orders', 'edit orders', 'delete orders']);
+        $role3 = Role::firstOrCreate(
+            ['name' => User::ROLE_ADMIN, 'guard_name' => $guardName],
+            ['desc' => 'System administrator'],
+        );
+        $role3->syncPermissions(['create products', 'view products', 'edit products', 'delete products', 'create orders', 'view orders', 'edit orders', 'delete orders']);
 
         // Full system access
-        $role4 = Role::create(['name' => User::ROLE_SUPER_ADMIN, 'desc' => 'Super administrator', 'guard_name' => $guardName]);
-        $role4->givePermissionTo(Permission::all());
+        $role4 = Role::firstOrCreate(
+            ['name' => User::ROLE_SUPER_ADMIN, 'guard_name' => $guardName],
+            ['desc' => 'Super administrator'],
+        );
+        $role4->syncPermissions(Permission::all());
         // Gate::before in AppServiceProvider also grants this role every ability.
 
-        // Support
-        $user = User::factory()->create([
-            'name' => 'Jules Conn',
-            'email' => 'jules.conn@bentadoor.com',
-            'email_verified_at' => now(),
-            'password' => Hash::make('Password@1234'),
-            'remember_token' => Str::random(10),
-        ]);
-        $user->assignRole($role1);
+        $this->staffUser('Jules Conn', 'jules.conn@bentadoor.com', $role1);
+        $this->staffUser('Bartell Toni', 'bartell.toni@bentadoor.com', $role2);
+        $this->staffUser('Bryce Douglas', 'bryce.douglas@bentadoor.org', $role3);
+        $this->staffUser('Cyrus Manatad', 'cyrusmanatad@bentadoor.com', $role4);
+    }
 
-        // Inventory Staff
-        $user = User::factory()->create([
-            'name' => 'Bartell Toni',
-            'email' => 'bartell.toni@bentadoor.com',
-            'email_verified_at' => now(),
-            'password' => Hash::make('Password@1234'),
-            'remember_token' => Str::random(10),
-        ]);
-        $user->assignRole($role2);
+    private function staffUser(string $name, string $email, Role $role): void
+    {
+        $user = User::firstOrCreate(
+            ['email' => $email],
+            [
+                'name' => $name,
+                'email_verified_at' => now(),
+                'password' => Hash::make('Password@1234'),
+                'remember_token' => Str::random(10),
+            ],
+        );
 
-        // Admin/Manager
-        $user = User::factory()->create([
-            'name' => 'Bryce Douglas',
-            'email' => 'bryce.douglas@bentadoor.org',
-            'email_verified_at' => now(),
-            'password' => Hash::make('Password@1234'),
-            'remember_token' => Str::random(10),
-        ]);
-        $user->assignRole($role3);
-
-        // Super Admin
-        $user = User::factory()->create([
-            'name' => 'Cyrus Manatad',
-            'email' => 'cyrusmanatad@bentadoor.com',
-            'email_verified_at' => now(),
-            'password' => Hash::make('Password@1234'),
-            'remember_token' => Str::random(10),
-        ]);
-        $user->assignRole($role4);
+        if (! $user->hasRole($role)) {
+            $user->assignRole($role);
+        }
     }
 }
