@@ -21,9 +21,11 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
         ]);
 
-        // Create 20 products with 5 reviews each
+        // Production gets a small catalog. Local and test seeds keep the full set.
+        $productCount = app()->environment('production') ? 5 : 40;
+
         $products = Product::factory()
-            ->count(40)
+            ->count($productCount)
             ->hasReviews(5)
             ->create();
 
