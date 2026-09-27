@@ -4,11 +4,11 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\PermissionRegistrar;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Str;
 
 class PermissionsSeeder extends Seeder
 {
@@ -74,7 +74,7 @@ class PermissionsSeeder extends Seeder
         $role4 = Role::create(['name' => User::ROLE_SUPER_ADMIN, 'desc' => 'Super administrator', 'guard_name' => $guardName]);
         $role4->givePermissionTo(Permission::all());
         // Gate::before in AppServiceProvider also grants this role every ability.
-        
+
         // Support
         $user = User::factory()->create([
             'name' => 'Jules Conn',

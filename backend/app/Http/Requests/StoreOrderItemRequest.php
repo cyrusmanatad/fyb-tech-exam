@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
@@ -10,7 +11,7 @@ class StoreOrderItemRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
@@ -23,7 +24,7 @@ class StoreOrderItemRequest extends FormRequest
                 Rule::unique('order_items', 'variant_id')
                     ->where('order_id', $this->route('order')),
             ],
-            'quantity'   => ['required', 'integer', 'min:1'],
+            'quantity' => ['required', 'integer', 'min:1'],
             'price_type' => ['required', 'string', Rule::in(['sale', 'original'])],
         ];
     }
@@ -32,11 +33,11 @@ class StoreOrderItemRequest extends FormRequest
     {
         return [
             'variant_id.required' => 'Variant is required.',
-            'variant_id.exists'   => 'Selected variant does not exist.',
-            'variant_id.unique'   => 'This variant is already in the order.',
-            'quantity.required'   => 'Quantity is required.',
-            'quantity.min'        => 'Quantity must be at least 1.',
-            'price_type.in'       => 'Price type must be either sale or original.',
+            'variant_id.exists' => 'Selected variant does not exist.',
+            'variant_id.unique' => 'This variant is already in the order.',
+            'quantity.required' => 'Quantity is required.',
+            'quantity.min' => 'Quantity must be at least 1.',
+            'price_type.in' => 'Price type must be either sale or original.',
         ];
     }
 }

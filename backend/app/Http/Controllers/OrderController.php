@@ -6,44 +6,43 @@ use App\DTOs\OrderData;
 use App\Enums\OrderStatus;
 use App\Http\Requests\StoreOrderRequest;
 use App\Http\Requests\UpdateOrderRequest;
-use App\Http\Resources\OrderResource;
 use App\Http\Resources\OrdersTransactionResource;
 use App\Models\Order;
 use App\Services\OrderService;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Validation\Rules\Enum;
-use \Illuminate\Validation\ValidationException;
+use Illuminate\Validation\ValidationException;
 
 class OrderController extends Controller
 {
     public function __construct(protected OrderService $orderService) {}
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
         $query = Order::query()
-        ->select(['id','user_id','order_number','total','status','payment_status','payment_method','created_at'])
-        ->with([
-            'user:id,name',
-            'items:id,order_id,sku,product_name,quantity,subtotal'
-        ])
-        ->orderByDesc('created_at');
+            ->select(['id', 'user_id', 'order_number', 'total', 'status', 'payment_status', 'payment_method', 'created_at'])
+            ->with([
+                'user:id,name',
+                'items:id,order_id,sku,product_name,quantity,subtotal',
+            ])
+            ->orderByDesc('created_at');
 
-        if($request->filled('status')){
+        if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
-        if($request->filled('search')){
+        if ($request->filled('search')) {
             $search = $request->search;
 
             $query->where(function ($q) use ($search) {
                 $q->where('order_number', 'like', "%{$search}%")
-                ->orWhereHas("user", function ($q2) use ($search) {
-                    $q2->where('name', 'like', "%{$search}%");
-                });
+                    ->orWhereHas('user', function ($q2) use ($search) {
+                        $q2->where('name', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -64,17 +63,16 @@ class OrderController extends Controller
             $order = $this->orderService->create($dto);
 
             return response()->json([
-                "message" => "Order created successfully",
-                "data" => $order
+                'message' => 'Order created successfully',
+                'data' => $order,
             ], 201);
 
         } catch (ValidationException $e) {
             throw $e; // re-throw — Laravel handles 422 response
-
         } catch (\Throwable $e) {
             return response()->json([
                 'message' => 'Failed to create order',
-                'error'   => $e->getMessage(),
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -88,13 +86,13 @@ class OrderController extends Controller
             $order = $order->update($request->validated());
 
             return response()->json([
-                "message" => "Order updated successfully",
-                "data" => $order
+                'message' => 'Order updated successfully',
+                'data' => $order,
             ], 201);
         } catch (\Throwable $e) {
             return response()->json([
                 'message' => 'Failed to update order',
-                'error'   => $e->getMessage(),
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -107,8 +105,8 @@ class OrderController extends Controller
         $order = $order->delete();
 
         return response()->json([
-            "message" => "Order updated successfully",
-            "data" => $order
+            'message' => 'Order updated successfully',
+            'data' => $order,
         ], 201);
     }
 
@@ -122,9 +120,9 @@ class OrderController extends Controller
                 'today' => Order::whereDate('created_at', now())->count(),
                 'total' => Order::count(),
                 'pending' => Order::where('status', OrderStatus::PENDING)->count(),
-                'completed' => Order::whereIn('status', [OrderStatus::SHIPPED,OrderStatus::DELIVERED])->count(),
+                'completed' => Order::whereIn('status', [OrderStatus::SHIPPED, OrderStatus::DELIVERED])->count(),
                 'revenue' => Order::sum('total'),
-            ]
+            ],
         ]);
     }
 
@@ -139,6 +137,7 @@ class OrderController extends Controller
 
         // view pdf file
         return $pdf->stream('orders-report.pdf');
+
         // or download
         return $pdf->download('orders-report.pdf');
 

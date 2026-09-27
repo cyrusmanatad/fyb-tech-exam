@@ -1,3 +1,9 @@
+<script lang="ts">
+export default {
+  name: 'ProductHeader',
+}
+</script>
+
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useUiStore } from '@/stores/ui'

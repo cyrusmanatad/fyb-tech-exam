@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Product extends Model
 {
     use HasFactory, SoftDeletes;
+
     protected $fillable = [
         'user_id',
         'category_id',
@@ -54,7 +55,8 @@ class Product extends Model
         return $this->belongsTo(Category::class);
     }
 
-    public function getHumanizeDatetimeAttribute(){
+    public function getHumanizeDatetimeAttribute()
+    {
         return $this->created_at ? $this->created_at->diffForHumans() : null;
     }
 

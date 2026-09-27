@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\ProductService;
 use App\Enums\ProductStatus;
 use App\Http\Resources\ProductResource;
 use App\Models\Product;
+use App\Services\ProductService;
 use Illuminate\Http\Request;
 
 class ProductInventoryController extends Controller
@@ -25,15 +25,15 @@ class ProductInventoryController extends Controller
 
         return response()->json([
             'data' => [
-                'total_products'   => Product::count(),
-                'total_published'  => Product::where('status', ProductStatus::PUBLISHED)->count(),
-                'total_draft'      => Product::where('status', ProductStatus::DRAFT)->count(),
-                'total_inactive'   => Product::where('status', ProductStatus::INACTIVE)->count(),
-                'total_out_stock'  => Product::where('status', ProductStatus::OUT_STOCK)->count(),
-                'total_stock'      => (int) $summary->sum('total_stock'),
-                'total_reserved'   => (int) $summary->sum('total_reserved'),
-                'total_available'  => (int) ($summary->sum('total_stock') - $summary->sum('total_reserved')),
-            ]
+                'total_products' => Product::count(),
+                'total_published' => Product::where('status', ProductStatus::PUBLISHED)->count(),
+                'total_draft' => Product::where('status', ProductStatus::DRAFT)->count(),
+                'total_inactive' => Product::where('status', ProductStatus::INACTIVE)->count(),
+                'total_out_stock' => Product::where('status', ProductStatus::OUT_STOCK)->count(),
+                'total_stock' => (int) $summary->sum('total_stock'),
+                'total_reserved' => (int) $summary->sum('total_reserved'),
+                'total_available' => (int) ($summary->sum('total_stock') - $summary->sum('total_reserved')),
+            ],
         ]);
     }
 
@@ -76,20 +76,19 @@ class ProductInventoryController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('slug', 'like', "%{$search}%")
-                  ->orWhereHas('variants', fn($q2) =>
-                      $q2->where('sku', 'like', "%{$search}%")
-                         ->orWhere('desc', 'like', "%{$search}%")
-                  );
+                    ->orWhereHas('variants', fn ($q2) => $q2->where('sku', 'like', "%{$search}%")
+                        ->orWhere('desc', 'like', "%{$search}%")
+                    );
             });
         }
 
         // Filter by stock level
         if ($request->filled('stock_filter')) {
-            match($request->stock_filter) {
-                'low'      => $query->havingRaw('total_stock <= 10 AND total_stock > 0'),
+            match ($request->stock_filter) {
+                'low' => $query->havingRaw('total_stock <= 10 AND total_stock > 0'),
                 'in_stock' => $query->havingRaw('total_stock > 0'),
-                'empty'    => $query->havingRaw('total_stock = 0'),
-                default    => null
+                'empty' => $query->havingRaw('total_stock = 0'),
+                default => null
             };
         }
 

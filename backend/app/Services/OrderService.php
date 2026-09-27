@@ -9,7 +9,6 @@ use App\Enums\PaymentStatus;
 use App\Models\Order;
 use App\Models\ProductVariant;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class OrderService
@@ -25,33 +24,33 @@ class OrderService
 
             // 2. Resolve variants with their products
             $variantIds = $data->items->pluck('variant_id')->toArray();
-            $variants   = ProductVariant::with('product', 'inventory')
-                            ->whereIn('id', $variantIds)
-                            ->get()
-                            ->keyBy('id'); // key by id for easy lookup
+            $variants = ProductVariant::with('product', 'inventory')
+                ->whereIn('id', $variantIds)
+                ->get()
+                ->keyBy('id'); // key by id for easy lookup
 
             // 3. Calculate totals
             $subtotal = $this->calculateSubtotal($data->items, $variants);
-            $total    = $subtotal
+            $total = $subtotal
                         - $data->discount
                         + $data->tax
                         + $data->shipping_fee;
 
             // 4. Create Order
             $order = Order::create([
-                'order_number'   => $this->generateOrderNumber(),
-                'user_id'        => $data->user_id,
-                'subtotal'       => $subtotal,
-                'tax'            => $data->tax,
-                'discount'       => $data->discount,
-                'shipping_fee'   => $data->shipping_fee,
-                'total'          => max(0, $total), // prevent negative total
-                'currency'       => $data->currency,
-                'status'         => OrderStatus::PENDING,
+                'order_number' => $this->generateOrderNumber(),
+                'user_id' => $data->user_id,
+                'subtotal' => $subtotal,
+                'tax' => $data->tax,
+                'discount' => $data->discount,
+                'shipping_fee' => $data->shipping_fee,
+                'total' => max(0, $total), // prevent negative total
+                'currency' => $data->currency,
+                'status' => OrderStatus::PENDING,
                 'payment_status' => PaymentStatus::UNPAID,
                 'payment_method' => $data->payment_method,
-                'shipping_method'=> $data->shipping_method,
-                'notes'          => $data->notes,
+                'shipping_method' => $data->shipping_method,
+                'notes' => $data->notes,
             ]);
 
             // 5. Create Order Items + deduct inventory
@@ -76,10 +75,11 @@ class OrderService
         foreach ($items as $item) {
             $variant = ProductVariant::with('inventory')->find($item->variant_id);
 
-            if (!$variant || !$variant->is_active) {
+            if (! $variant || ! $variant->is_active) {
                 $errors["items.{$item->variant_id}"] = [
-                    "Variant {$item->variant_id} is not available."
+                    "Variant {$item->variant_id} is not available.",
                 ];
+
                 continue;
             }
 
@@ -89,12 +89,12 @@ class OrderService
             if ($item->quantity > $available) {
                 $errors["items.{$item->variant_id}"] = [
                     "Insufficient stock for SKU {$variant->sku}. 
-                     Available: {$available}, Requested: {$item->quantity}"
+                     Available: {$available}, Requested: {$item->quantity}",
                 ];
             }
         }
 
-        if (!empty($errors)) {
+        if (! empty($errors)) {
             throw ValidationException::withMessages($errors);
         }
     }
@@ -103,32 +103,32 @@ class OrderService
      * Create a single order item with price snapshot
      */
     private function createOrderItem(
-        Order          $order,
-        OrderItemData  $item,
+        Order $order,
+        OrderItemData $item,
         ProductVariant $variant
     ): void {
-        $unitPrice  = (float) $variant->price;
-        $salePrice  = (float) ($variant->sale_price ?? $variant->price);
+        $unitPrice = (float) $variant->price;
+        $salePrice = (float) ($variant->sale_price ?? $variant->price);
         $finalPrice = $item->price_type === 'sale' && $variant->sale_price
                         ? $salePrice
                         : $unitPrice;
 
         $order->items()->create([
-            'variant_id'   => $variant->id,
+            'variant_id' => $variant->id,
 
             // Snapshot — preserve at time of order
-            'sku'          => $variant->sku,
+            'sku' => $variant->sku,
             'product_name' => $variant->product->title ?? $variant->sku,
             'variant_name' => $this->resolveVariantName($variant),
-            'uom'          => $variant->uom,
-            'unit_price'   => $unitPrice,
-            'sale_price'   => $salePrice,
-            'final_price'  => $finalPrice,
-            'price_type'   => $item->price_type,
-            'attributes'   => $variant->attributes,
+            'uom' => $variant->uom,
+            'unit_price' => $unitPrice,
+            'sale_price' => $salePrice,
+            'final_price' => $finalPrice,
+            'price_type' => $item->price_type,
+            'attributes' => $variant->attributes,
 
-            'quantity'     => $item->quantity,
-            'subtotal'     => round($finalPrice * $item->quantity, 2),
+            'quantity' => $item->quantity,
+            'subtotal' => round($finalPrice * $item->quantity, 2),
         ]);
     }
 
@@ -148,9 +148,9 @@ class OrderService
         $subtotal = 0;
 
         foreach ($items as $item) {
-            $variant    = $variants->get($item->variant_id);
-            $unitPrice  = (float) $variant->price;
-            $salePrice  = (float) ($variant->sale_price ?? $variant->price);
+            $variant = $variants->get($item->variant_id);
+            $unitPrice = (float) $variant->price;
+            $salePrice = (float) ($variant->sale_price ?? $variant->price);
             $finalPrice = $item->price_type === 'sale' && $variant->sale_price
                             ? $salePrice
                             : $unitPrice;
@@ -167,7 +167,9 @@ class OrderService
      */
     private function resolveVariantName(ProductVariant $variant): ?string
     {
-        if (empty($variant->attributes)) return null;
+        if (empty($variant->attributes)) {
+            return null;
+        }
 
         return collect($variant->attributes)
             ->values()
@@ -180,7 +182,7 @@ class OrderService
      */
     private function generateOrderNumber(): string
     {
-        $year   = now()->format('Y');
+        $year = now()->format('Y');
         $prefix = "ORD-{$year}-";
 
         $latest = Order::query()->where('order_number', 'like', "{$prefix}%")
@@ -191,6 +193,6 @@ class OrderService
             ? (int) str($latest)->afterLast('-')->toInteger() + 1
             : 1;
 
-        return $prefix . str_pad($next, 5, '0', STR_PAD_LEFT);
+        return $prefix.str_pad($next, 5, '0', STR_PAD_LEFT);
     }
 }

@@ -1,16 +1,12 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
 import {
-  Bars3Icon,
-  HomeIcon,
   UserPlusIcon,
   ChevronDownIcon,
   MagnifyingGlassIcon,
   CalendarIcon,
   PencilSquareIcon,
   ShieldExclamationIcon,
-  ArrowLeftIcon,
-  ArrowRightIcon,
   XMarkIcon,
 } from '@heroicons/vue/24/outline'
 import BaseModal from '@/components/common/BaseModal.vue'

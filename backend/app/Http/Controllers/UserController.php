@@ -2,13 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Services\UserService;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Spatie\Permission\Models\Role;
@@ -20,33 +17,34 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $query = User::query()
-        ->select(['id','name','email','created_at', 'last_login_at'])
-        ->with([
-            'roles:id,name'
-        ])
-        ->whereHas('roles')
-        ->orderByDesc("last_login_at");
-        
-        if($request->filled('search')){
+            ->select(['id', 'name', 'email', 'created_at', 'last_login_at'])
+            ->with([
+                'roles:id,name',
+            ])
+            ->whereHas('roles')
+            ->orderByDesc('last_login_at');
+
+        if ($request->filled('search')) {
             $search = $request->search;
 
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                ->orWhere('email', 'like', "%{$search}%")
-                ->orWhereHas("roles", function ($q2) use ($search) {
-                    $q2->where('name', 'like', "%{$search}%");
-                });
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhereHas('roles', function ($q2) use ($search) {
+                        $q2->where('name', 'like', "%{$search}%");
+                    });
             });
         }
-        
+
         return UserResource::collection($query->paginate(10));
     }
 
-    public function store(StoreUserRequest $request){
+    public function store(StoreUserRequest $request)
+    {
         try {
             $result = $this->userService->create($request->validated());
 
-            $user          = $result['user'];
+            $user = $result['user'];
             $plainPassword = $result['password'];
 
             // Send welcome email with generated password
@@ -54,13 +52,13 @@ class UserController extends Controller
 
             return response()->json([
                 'message' => 'User created successfully',
-                'data'    => new UserResource($user),
+                'data' => new UserResource($user),
             ], 201);
 
         } catch (\Throwable $e) {
             return response()->json([
                 'message' => 'Failed to create user',
-                'error'   => $e->getMessage(),
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -77,18 +75,18 @@ class UserController extends Controller
         // Prevent deactivating yourself
         if ($request->user()->id === $user->id) {
             return response()->json([
-                'message' => 'You cannot change your own status.'
+                'message' => 'You cannot change your own status.',
             ], 422);
         }
 
         $user->update([
-            'is_active' => $request->is_active
+            'is_active' => $request->is_active,
         ]);
 
         return response()->json([
             'message' => 'User status updated successfully',
             'user' => $user,
-            'is_active' => $request->is_active
+            'is_active' => $request->is_active,
         ]);
     }
 
@@ -105,27 +103,27 @@ class UserController extends Controller
         // Prevent changing Super Admin role unless you are Super Admin
         if (
             $user->hasRole(User::ROLE_SUPER_ADMIN) &&
-            !auth()->user()->hasRole(User::ROLE_SUPER_ADMIN)
+            ! auth()->user()->hasRole(User::ROLE_SUPER_ADMIN)
         ) {
             return response()->json([
-                'message' => 'You are not authorized to change a Super Admin role.'
+                'message' => 'You are not authorized to change a Super Admin role.',
             ], 403);
         }
 
         // Prevent assigning Super Admin role unless you are Super Admin
         if (
             $request->role === User::ROLE_SUPER_ADMIN &&
-            !auth()->user()->hasRole(User::ROLE_SUPER_ADMIN)
+            ! auth()->user()->hasRole(User::ROLE_SUPER_ADMIN)
         ) {
             return response()->json([
-                'message' => 'You are not authorized to assign Super Admin role.'
+                'message' => 'You are not authorized to assign Super Admin role.',
             ], 403);
         }
 
         // Prevent changing your own role
         if ($user->id === auth()->id()) {
             return response()->json([
-                'message' => 'You cannot change your own role.'
+                'message' => 'You cannot change your own role.',
             ], 403);
         }
 
@@ -134,38 +132,38 @@ class UserController extends Controller
 
         return response()->json([
             'message' => 'User role updated successfully',
-            'data'    => [
-                'id'    => $user->id,
-                'name'  => $user->name,
+            'data' => [
+                'id' => $user->id,
+                'name' => $user->name,
                 'email' => $user->email,
                 'roles' => $user->getRoleNames(),
-            ]
+            ],
         ]);
     }
 
     public function destroy(Request $request, User $user)
     {
         // Authorization
-        if (!$request->user()->hasPermissionTo('delete users')) {
+        if (! $request->user()->hasPermissionTo('delete users')) {
             return response()->json([
-                'message' => 'Unauthorized action'
+                'message' => 'Unauthorized action',
             ], 403);
         }
 
         // Prevent self-deletion
         if ($request->user()->id === $user->id) {
             return response()->json([
-                'message' => 'You cannot delete your own account.'
+                'message' => 'You cannot delete your own account.',
             ], 422);
         }
 
         // Prevent deleting Super Admin unless you are Super Admin
         if (
             $user->hasRole(User::ROLE_SUPER_ADMIN) &&
-            !$request->user()->hasRole(User::ROLE_SUPER_ADMIN)
+            ! $request->user()->hasRole(User::ROLE_SUPER_ADMIN)
         ) {
             return response()->json([
-                'message' => 'You are not authorized to delete a Super Admin.'
+                'message' => 'You are not authorized to delete a Super Admin.',
             ], 403);
         }
 
@@ -173,18 +171,18 @@ class UserController extends Controller
             DB::transaction(function () use ($user) {
                 // Detach roles first, then delete
                 // Only needed if cascade is NOT set on model_has_roles
-                $user->roles()->detach();            
+                $user->roles()->detach();
                 $user->delete();            // soft delete if model uses SoftDeletes
             });
 
             return response()->json([
-                'message' => 'User deleted successfully'
+                'message' => 'User deleted successfully',
             ]);
 
         } catch (\Throwable $e) {
             return response()->json([
                 'message' => 'Failed to delete user',
-                'error'   => $e->getMessage(),
+                'error' => $e->getMessage(),
             ], 500);
         }
     }
@@ -192,17 +190,18 @@ class UserController extends Controller
     public function total()
     {
         $roleCounts = Role::withCount('users')->get()
-        ->mapWithKeys(fn($role) => [
-            $role->name => $role->users_count
-        ]);
+            ->mapWithKeys(fn ($role) => [
+                $role->name => $role->users_count,
+            ]);
+
         return response()->json([
             'data' => [
-                'total'=> User::role([User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 'Support', 'Inventory Staff'])->count(),
+                'total' => User::role([User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN, 'Support', 'Inventory Staff'])->count(),
                 'admin' => User::role([User::ROLE_ADMIN, User::ROLE_SUPER_ADMIN])->count(),
                 'non_admin' => User::role(['Support', 'Inventory Staff'])->count(),
                 'active' => User::count(),
-                'by_role' => $roleCounts // standby not yet used
-            ]
+                'by_role' => $roleCounts, // standby not yet used
+            ],
         ]);
     }
 }

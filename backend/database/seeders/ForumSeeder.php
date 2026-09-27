@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Forum;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class ForumSeeder extends Seeder
@@ -13,6 +12,6 @@ class ForumSeeder extends Seeder
      */
     public function run(): void
     {
-        Forum::factory(5)->hasComments(mt_rand(1,5))->create();
+        Forum::factory(5)->hasComments(mt_rand(1, 5))->create();
     }
 }

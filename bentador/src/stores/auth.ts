@@ -26,7 +26,7 @@ export const useAuthStore = defineStore('auth', () => {
 
       const redirect = router.currentRoute.value.query.redirect as string
       router.push(redirect || { name: 'order-entry' })
-    } catch (error) {
+    } catch {
       accessToken.value = ''
       return false
     }
@@ -41,8 +41,8 @@ export const useAuthStore = defineStore('auth', () => {
 
       user.value = data.data
       status.value = 200
-    } catch (error: any) {
-      status.value = error.response?.status ?? 500
+    } catch (error: unknown) {
+      status.value = axios.isAxiosError(error) ? (error.response?.status ?? 500) : 500
       user.value = null
     } finally {
       loading.value = false
@@ -73,7 +73,7 @@ export const useAuthStore = defineStore('auth', () => {
       const { data } = await axios.post('/api/v1/auth/refresh')
       accessToken.value = data.authorization.access_token
       return true
-    } catch (error) {
+    } catch {
       accessToken.value = ''
       return false
     }

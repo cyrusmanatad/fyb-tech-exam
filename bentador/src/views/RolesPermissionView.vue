@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { handleError, onMounted, ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useUiStore } from '@/stores/ui'
 import {
   Bars3Icon,
   HomeIcon,
   PlusIcon,
-  ChevronDownIcon,
   TrashIcon,
   CheckIcon,
   XMarkIcon,

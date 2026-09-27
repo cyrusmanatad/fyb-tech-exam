@@ -2,8 +2,8 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class StoreUserRequest extends FormRequest
 {
@@ -12,20 +12,20 @@ class StoreUserRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return $this->user()->hasPermissionTo("create users");
+        return $this->user()->hasPermissionTo('create users');
     }
 
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
-            'name'   => ['required', 'string', 'max:255'],
-            'email'  => ['required', 'email', 'unique:users,email'],
-            'role'   => ['required', 'string', 'exists:roles,name'],
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'unique:users,email'],
+            'role' => ['required', 'string', 'exists:roles,name'],
         ];
     }
 
@@ -33,7 +33,7 @@ class StoreUserRequest extends FormRequest
     {
         return [
             'email.unique' => 'This email is already registered.',
-            'role.exists'  => 'Selected role does not exist.',
+            'role.exists' => 'Selected role does not exist.',
         ];
     }
 }

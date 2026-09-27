@@ -18,6 +18,7 @@ import Pagination from '@/components/common/Pagination.vue'
 import TableSpinner from '@/components/ui/TableSpinner.vue'
 import { useDebounceFn } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
+import axios from 'axios'
 import { useRoleStore } from '@/stores/roleStore'
 import { ROLES } from '@/types/enum'
 
@@ -89,13 +90,14 @@ const handleCreateUser = async () => {
   try {
     await userStore.createUser({ ...formData })
     handleClose() // close and reset only on success
-  } catch (err: any) {
+  } catch (err: unknown) {
     // Map Laravel 422 validation errors to form fields
-    if (err.response?.status === 422) {
-      const errors = err.response.data.errors
+    if (axios.isAxiosError(err) && err.response?.status === 422) {
+      const errors = err.response.data.errors as Record<string, string[]>
       Object.keys(errors).forEach((key) => {
-        if (key in formErrors) {
-          formErrors[key as keyof UserFormErrors] = errors[key]
+        const messages = errors[key]
+        if (key in formErrors && messages) {
+          formErrors[key as keyof UserFormErrors] = messages
         }
       })
     }
@@ -257,6 +259,7 @@ onMounted(async () => {
                 <td v-if="user.roles.length > 0" class="px-6 py-4">
                   <span
                     v-for="role in user.roles"
+                    :key="role"
                     class="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-[10px] font-black uppercase text-gray-600 dark:text-slate-400"
                     >{{ role }}</span
                   >

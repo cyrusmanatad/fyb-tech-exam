@@ -1,5 +1,11 @@
+<script lang="ts">
+export default {
+  name: 'AppSidebar',
+}
+</script>
+
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { ref } from 'vue'
 import { useUiStore } from '@/stores/ui'
 import { useProductStore } from '@/stores/products'
 import {

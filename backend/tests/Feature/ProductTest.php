@@ -26,7 +26,7 @@ test('index returns products', function () {
         ->assertJsonStructure([
             'current_page',
             'data' => [
-                '*' => ['id', 'user_id', 'sku_code', 'sku_desc', 'sku_uom', 'sku_price', 'created_at', 'updated_at', 'user']
+                '*' => ['id', 'user_id', 'sku_code', 'sku_desc', 'sku_uom', 'sku_price', 'created_at', 'updated_at', 'user'],
             ],
             'first_page_url',
             'from',
@@ -56,7 +56,7 @@ test('store creates product', function () {
 
     $response->assertStatus(200)
         ->assertJson([
-            'message' => 'Product created successfully'
+            'message' => 'Product created successfully',
         ]);
 
     $this->assertDatabaseHas('products', [
@@ -85,7 +85,7 @@ test('show returns product', function () {
         'user_id' => $this->user->id,
     ]);
 
-    $response = $this->getJson('/api/v1/products/' . $product->id);
+    $response = $this->getJson('/api/v1/products/'.$product->id);
 
     $response->assertStatus(200)
         ->assertJson([
@@ -108,11 +108,11 @@ test('update updates product', function () {
         'sku_price' => 25.50,
     ];
 
-    $response = $this->putJson('/api/v1/products/' . $product->id, $updatedData);
+    $response = $this->putJson('/api/v1/products/'.$product->id, $updatedData);
 
     $response->assertStatus(200)
         ->assertJson([
-            'message' => 'Product updated successfully'
+            'message' => 'Product updated successfully',
         ]);
 
     $this->assertDatabaseHas('products', [
@@ -162,7 +162,7 @@ test('update validation errors', function () {
         'sku_price' => 'not-a-number', // Invalid
     ];
 
-    $response = $this->putJson('/api/v1/products/' . $product->id, $updatedData);
+    $response = $this->putJson('/api/v1/products/'.$product->id, $updatedData);
 
     $response->assertStatus(422)
         ->assertJsonValidationErrors(['sku_code', 'sku_price']);
@@ -173,11 +173,11 @@ test('destroy deletes product', function () {
         'user_id' => $this->user->id,
     ]);
 
-    $response = $this->deleteJson('/api/v1/products/' . $product->id);
+    $response = $this->deleteJson('/api/v1/products/'.$product->id);
 
     $response->assertStatus(200)
         ->assertJson([
-            'message' => 'Product deleted successfully'
+            'message' => 'Product deleted successfully',
         ]);
 
     $this->assertDatabaseMissing('products', [

@@ -1,15 +1,15 @@
 <?php
 
-use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AnalyticsController;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CustomerController;
-use App\Http\Controllers\ForumController;
 use App\Http\Controllers\ForumCommentController;
+use App\Http\Controllers\ForumController;
 use App\Http\Controllers\OrderController;
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProductInventoryController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\UserController;
 use App\Models\User;

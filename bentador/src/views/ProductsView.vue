@@ -3,9 +3,8 @@ import StatGrid from '@/components/product/StatGrid.vue'
 import ProductTable from '@/components/product/ProductTable.vue'
 import ProductModal from '@/components/product/modals/ProductModal.vue'
 import DeleteModal from '@/components/product/modals/DeleteModal.vue'
-import LogoutModal from '@/components/product/modals/LogoutModal.vue'
 import AppHeader from '@/components/layouts/AppHeader.vue'
-import type { ActionItem, DropdownAction, DropdownItem } from '@/types/header-types'
+import type { ActionItem, DropdownAction } from '@/types/header-types'
 import { useProductStore } from '@/stores/products'
 import {
   ArrowDownTrayIcon,

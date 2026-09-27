@@ -2,57 +2,57 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 
 class StoreProductRequest extends FormRequest
 {
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
+     * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
-        
-    $rules = [
-        'category_id' => 'integer|exists:categories,id',
 
-        // base SKU (product level)
-        'base_sku' => 'required|string|unique:products,base_sku',
+        $rules = [
+            'category_id' => 'integer|exists:categories,id',
 
-        'title' => 'required|string',
-        'description' => 'nullable|string',
-        'uom' => 'required|string',
+            // base SKU (product level)
+            'base_sku' => 'required|string|unique:products,base_sku',
 
-        'price' => 'required|numeric|min:0',
-        'sale_price' => 'required|numeric|min:0',
+            'title' => 'required|string',
+            'description' => 'nullable|string',
+            'uom' => 'required|string',
 
-        'status' => 'required|in:published,out-of-stock,inactive,draft',
-        'stock' => 'required|numeric|min:0',
+            'price' => 'required|numeric|min:0',
+            'sale_price' => 'required|numeric|min:0',
 
-        'slug' => 'nullable|string',
-        'currency' => 'nullable|string|size:3',
+            'status' => 'required|in:published,out-of-stock,inactive,draft',
+            'stock' => 'required|numeric|min:0',
 
-        'options' => 'nullable|array',
+            'slug' => 'nullable|string',
+            'currency' => 'nullable|string|size:3',
 
-        // variants required on create
-        'variants' => 'required|array|min:1',
+            'options' => 'nullable|array',
 
-        'variants.*.sku' => [
-            'required',
-            'string',
-            'distinct', // no duplicates in request
-            'unique:product_variants,sku', // unique in DB
-        ],
+            // variants required on create
+            'variants' => 'required|array|min:1',
 
-        'variants.*.price' => 'required|numeric|min:0',
-        'variants.*.sale_price' => 'required|numeric|min:0',
-        'variants.*.stock' => 'required|numeric|min:0',
-        'variants.*.reserved_quantity' => 'nullable|numeric|min:0',
-        'variants.*.attributes' => 'required|array',
-    ];
+            'variants.*.sku' => [
+                'required',
+                'string',
+                'distinct', // no duplicates in request
+                'unique:product_variants,sku', // unique in DB
+            ],
 
-    return $rules;
+            'variants.*.price' => 'required|numeric|min:0',
+            'variants.*.sale_price' => 'required|numeric|min:0',
+            'variants.*.stock' => 'required|numeric|min:0',
+            'variants.*.reserved_quantity' => 'nullable|numeric|min:0',
+            'variants.*.attributes' => 'required|array',
+        ];
+
+        return $rules;
     }
 }

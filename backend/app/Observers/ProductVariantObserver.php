@@ -29,12 +29,12 @@ class ProductVariantObserver
      */
     public function deleted(Product $product): void
     {
-        if (!$product->isForceDeleting()) {
+        if (! $product->isForceDeleting()) {
             $product->withoutEvents(function () use ($product) {
                 $product->update(['status' => ProductStatus::INACTIVE]); // string value
-                
+
                 $product->variants->each(
-                    fn($variant) => $variant->update(['is_active' => false])
+                    fn ($variant) => $variant->update(['is_active' => false])
                 );
             });
         }
@@ -49,7 +49,7 @@ class ProductVariantObserver
             $product->update(['status' => ProductStatus::DRAFT]); // string value
 
             $product->variants->each(
-                fn($variant) => $variant->update(['is_active' => true])
+                fn ($variant) => $variant->update(['is_active' => true])
             );
         });
     }
@@ -59,6 +59,6 @@ class ProductVariantObserver
      */
     public function forceDeleted(Product $product): void
     {
-        Log::info("Product permanently deleted", ['product_id' => $product->id]);
+        Log::info('Product permanently deleted', ['product_id' => $product->id]);
     }
 }

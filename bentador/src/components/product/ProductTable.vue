@@ -16,11 +16,9 @@ import { storeToRefs } from 'pinia'
 import { useDebounceFn } from '@vueuse/core'
 import {
   getProductStatus,
-  getProductStatusLabel,
   ProductStatus,
   ProductStatusLabel,
 } from '@/types/enum'
-import CheckboxDropdown from '../ui/CheckboxDropdown.vue'
 import { useAuthStore } from '@/stores/auth'
 import type { Status } from '@/types/data-types'
 import TableSpinner from '../ui/TableSpinner.vue'
@@ -28,14 +26,12 @@ import TableSpinner from '../ui/TableSpinner.vue'
 const productStore = useProductStore()
 const authStore = useAuthStore()
 
-const { search, meta } = storeToRefs(productStore)
+const { search } = storeToRefs(productStore)
 
 const selectedStatus = ref<Status<ProductStatus, ProductStatusLabel> | null>({
   code: ProductStatus.ALL,
   label: ProductStatusLabel.ALL,
 })
-
-const dateRangeFilter = ref<[string, string]>(['', ''])
 
 const activeFilter = ref<'status' | 'dateRange' | 'filter' | null>(null)
 
@@ -61,7 +57,7 @@ const selectStatus = (status: string) => {
 }
 
 const handleApplyRange = () => {
-  if (dateFrom.value != '' && dateFrom.value != '') activeFilter.value = null
+  if (dateFrom.value != '' && dateTo.value != '') activeFilter.value = null
 }
 
 const handleApplyCategoryFilter = () => {

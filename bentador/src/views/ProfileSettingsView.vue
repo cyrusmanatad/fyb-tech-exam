@@ -12,6 +12,7 @@ import type { ActionItem } from '@/types/header-types'
 import { useAuthStore } from '@/stores/auth'
 import type { ProfileFormErrors } from '@/types/auth'
 import { useToastStore } from '@/stores/toast'
+import axios from 'axios'
 
 const auth = useAuthStore()
 const toastStore = useToastStore()
@@ -78,12 +79,13 @@ const handleSubmit = async () => {
     setTimeout(() => {
       saved.value = false
     }, 3000)
-  } catch (err: any) {
-    if (err.response?.status === 422) {
-      const errors = err.response.data.errors
+  } catch (err: unknown) {
+    if (axios.isAxiosError(err) && err.response?.status === 422) {
+      const errors = err.response.data.errors as Record<string, string[]>
       Object.keys(errors).forEach((key) => {
-        if (key in formErrors) {
-          formErrors[key as keyof ProfileFormErrors] = errors[key]
+        const messages = errors[key]
+        if (key in formErrors && messages) {
+          formErrors[key as keyof ProfileFormErrors] = messages
         }
       })
     } else {

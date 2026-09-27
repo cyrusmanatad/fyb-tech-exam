@@ -39,7 +39,8 @@ class Order extends Model
         return $this->hasMany(OrderItem::class);
     }
 
-    public function getHumanizeDatetimeAttribute(){
+    public function getHumanizeDatetimeAttribute()
+    {
         return $this->created_at ? $this->created_at->diffForHumans() : null;
     }
 }

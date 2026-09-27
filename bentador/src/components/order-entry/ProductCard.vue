@@ -2,7 +2,6 @@
 import type { Product } from '@/types/data-types'
 import { PlusIcon, StarIcon } from '@heroicons/vue/24/solid'
 import { ShoppingCartIcon } from '@heroicons/vue/24/outline'
-import { rand } from '@vueuse/core'
 
 defineProps<{
   product: Product

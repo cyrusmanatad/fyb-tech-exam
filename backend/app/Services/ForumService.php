@@ -3,7 +3,6 @@
 namespace App\Services;
 
 use App\Models\Forum;
-use Illuminate\Support\Facades\Auth;
 
 class ForumService
 {

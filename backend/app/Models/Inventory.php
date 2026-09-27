@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Inventory extends Model
 {
     use HasFactory;
+
     protected $fillable = [
         'variant_id',
         'stock_quantity',
@@ -22,7 +23,8 @@ class Inventory extends Model
         return $this->belongsTo(ProductVariant::class);
     }
 
-    public function getHumanizeDatetimeAttribute(){
+    public function getHumanizeDatetimeAttribute()
+    {
         return $this->created_at ? $this->created_at->diffForHumans() : null;
     }
 }

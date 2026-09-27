@@ -1,17 +1,7 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
-import { useUiStore } from '@/stores/ui'
+import { ref, watch } from 'vue'
 import {
-  Bars3Icon,
-  HomeIcon,
   ArrowDownTrayIcon,
-  MagnifyingGlassIcon,
-  ChevronDownIcon,
-  CalendarIcon,
-  EyeIcon,
-  TrashIcon,
-  ArrowLeftIcon,
-  ArrowRightIcon,
   XMarkIcon,
   ExclamationTriangleIcon,
 } from '@heroicons/vue/24/outline'
@@ -115,6 +105,7 @@ watch(
           <div class="space-y-3">
             <div
               v-for="item in orderStore.selectedOrder?.items"
+              :key="item.id"
               class="flex justify-between items-center text-sm"
             >
               <span class="text-gray-600 dark:text-slate-400">

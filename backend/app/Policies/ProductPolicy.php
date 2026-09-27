@@ -2,10 +2,8 @@
 
 namespace App\Policies;
 
-use Log;
 use App\Models\Product;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
 
 class ProductPolicy
 {
@@ -30,7 +28,7 @@ class ProductPolicy
      */
     public function create(User $user): bool
     {
-        return $user->can("create products");
+        return $user->can('create products');
     }
 
     /**
@@ -38,13 +36,13 @@ class ProductPolicy
      */
     public function update(User $user, Product $product): bool
     {
-        if($user->can("edit all products")){
-            
+        if ($user->can('edit all products')) {
+
             return true;
         }
 
-        if($user->can("edit own products")){
-            
+        if ($user->can('edit own products')) {
+
             return $user->id === $product->user_id;
         }
 

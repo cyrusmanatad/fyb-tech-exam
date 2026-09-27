@@ -1,7 +1,7 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
 import axios from 'axios'
-import type { Role, RolePermissions } from '@/types/user-types'
+import type { Role } from '@/types/user-types'
 
 export const useRoleStore = defineStore('role', () => {
   const roles = ref<Role[]>([])

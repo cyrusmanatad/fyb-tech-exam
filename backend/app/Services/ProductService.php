@@ -1,12 +1,13 @@
 <?php
+
 // app/Services/OrderService.php
 
 namespace App\Services;
 
 use App\DTOs\ProductData;
 use App\Models\Product;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class ProductService
 {
@@ -14,6 +15,7 @@ class ProductService
     {
         return Product::all();
     }
+
     /**
      * Create a new order with items
      */
@@ -22,33 +24,32 @@ class ProductService
         return DB::transaction(function () use ($data) {
             // 1. Create Product
             $product = Product::create([
-                'user_id'     => $data->user_id,
+                'user_id' => $data->user_id,
                 'category_id' => $data->category_id,
-                'base_sku'    => $data->base_sku,
-                'title'       => $data->title,
+                'base_sku' => $data->base_sku,
+                'title' => $data->title,
                 'description' => $data->description ?? null,
-                'slug'        => $data->slug,
-                'status'      => $data->status,
+                'slug' => $data->slug,
+                'status' => $data->status,
             ]);
 
             foreach ($data->variants as $item) {
                 // 2. Create Variant
                 $variant = $product->variants()->create([
-                    'sku'        => $item['sku'],
-                    'uom'        => $data->uom,
-                    'price'      => $item['price'],
+                    'sku' => $item['sku'],
+                    'uom' => $data->uom,
+                    'price' => $item['price'],
                     'sale_price' => $item['sale_price'],
-                    'currency'   => $data->currency ?? 'USD',
-                    'attributes' => json_encode($item['attributes'])
+                    'currency' => $data->currency ?? 'USD',
+                    'attributes' => json_encode($item['attributes']),
                 ]);
-    
+
                 // 3. Create Inventory for that Variant
                 $variant->inventory()->create([
-                    'stock_quantity'    => $item['stock'] ?? 0,
+                    'stock_quantity' => $item['stock'] ?? 0,
                     'reserved_quantity' => 0,
                 ]);
             }
-
 
             return $product->fresh(['variants.inventory']);
         });
@@ -60,29 +61,29 @@ class ProductService
             // Update Product
             $product->update([
                 'category_id' => $data->category_id,
-                'base_sku'    => $data->base_sku,
-                'title'       => $data->title,
+                'base_sku' => $data->base_sku,
+                'title' => $data->title,
                 'description' => $data->description ?? null,
-                'slug'        => $data->slug,
-                'status'      => $data->status,
+                'slug' => $data->slug,
+                'status' => $data->status,
             ]);
 
             // Get existing variant IDs to track deletions
             $existingVariantIds = $product->variants->pluck('id')->toArray();
-            $updatedVariantIds  = [];
+            $updatedVariantIds = [];
 
             // Update or Create each variant
             foreach ($data->variants as $item) {
                 $variant = $product->variants()->updateOrCreate(
                     ['sku' => $item['sku']],           // find by SKU
                     [
-                        'sku'        => $item['sku'],
-                        'uom'        => $data->uom,
-                        'price'      => $item['price'],
+                        'sku' => $item['sku'],
+                        'uom' => $data->uom,
+                        'price' => $item['price'],
                         'sale_price' => $item['sale_price'],
-                        'currency'   => $data->currency ?? 'USD',
+                        'currency' => $data->currency ?? 'USD',
                         'attributes' => json_encode($item['attributes']),
-                        'is_active'  => true,
+                        'is_active' => true,
                     ]
                 );
 
@@ -97,10 +98,10 @@ class ProductService
 
             // Soft delete variants that were removed from the payload
             $removedIds = array_diff($existingVariantIds, $updatedVariantIds);
-            if (!empty($removedIds)) {
+            if (! empty($removedIds)) {
                 $product->variants()
-                        ->whereIn('id', $removedIds)
-                        ->each(fn($v) => $v->delete()); // respects observer & soft delete
+                    ->whereIn('id', $removedIds)
+                    ->each(fn ($v) => $v->delete()); // respects observer & soft delete
             }
 
             return true;
@@ -131,7 +132,7 @@ class ProductService
             foreach ($combinations as $combination) {
                 foreach ($option['values'] as $value) {
                     $tmp[] = array_merge($combination, [
-                        $option['name'] => $value
+                        $option['name'] => $value,
                     ]);
                 }
             }
@@ -159,7 +160,7 @@ class ProductService
         return $variants;
     }
 
-    public function baseQuery(): \Illuminate\Database\Eloquent\Builder
+    public function baseQuery(): Builder
     {
         return Product::query()
             ->select(['id', 'user_id', 'category_id', 'title', 'slug', 'status', 'created_at'])
@@ -175,15 +176,14 @@ class ProductService
     }
 
     public function applySearch(
-        \Illuminate\Database\Eloquent\Builder $query,
+        Builder $query,
         string $search
-    ): \Illuminate\Database\Eloquent\Builder {
+    ): Builder {
         return $query->where(function ($q) use ($search) {
             $q->where('slug', 'like', "%{$search}%")
-            ->orWhereHas('variants', fn($q2) =>
-                $q2->where('sku', 'like', "%{$search}%")
+                ->orWhereHas('variants', fn ($q2) => $q2->where('sku', 'like', "%{$search}%")
                     ->orWhere('desc', 'like', "%{$search}%")
-            );
+                );
         });
     }
 }

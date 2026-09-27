@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('description');
             $table->string('slug')->unique();
-            $table->enum('status', ['published','out-of-stock','inactive','draft'])->default('draft');
+            $table->enum('status', ['published', 'out-of-stock', 'inactive', 'draft'])->default('draft');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -52,8 +52,8 @@ return new class extends Migration
         Schema::create('inventories', function (Blueprint $table) {
             $table->id();
             $table->foreignId('variant_id')
-                  ->constrained('product_variants')
-                  ->cascadeOnDelete();
+                ->constrained('product_variants')
+                ->cascadeOnDelete();
             $table->integer('stock_quantity')->default(0);
             $table->integer('reserved_quantity')->default(0);
             $table->integer('low_stock_threshold')->default(5);
