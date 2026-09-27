@@ -17,7 +17,7 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $query = User::query()
-            ->select(['id', 'name', 'email', 'created_at', 'last_login_at'])
+            ->select(['id', 'name', 'email', 'created_at', 'last_login_at', 'is_active'])
             ->with([
                 'roles:id,name',
             ])

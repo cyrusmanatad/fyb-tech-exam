@@ -48,19 +48,7 @@ class CustomerResource extends JsonResource
 
     private function resolveStatus(): string
     {
-        if (! $this->is_active) {
-            return 'Inactive';
-        }
-
-        if (! $this->last_login_at) {
-            return 'Inactive';
-        }
-
-        return match (true) {
-            $this->last_login_at->gte(now()->subDays(7)) => 'Active',
-            $this->last_login_at->gte(now()->subDays(30)) => 'Idle',
-            default => 'Inactive',
-        };
+        return $this->is_active ? 'Active' : 'Inactive';
     }
 
     private function resolveStatusColor(): string

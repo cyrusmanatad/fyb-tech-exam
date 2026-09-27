@@ -41,7 +41,7 @@ class ProductService
                     'price' => $item['price'],
                     'sale_price' => $item['sale_price'],
                     'currency' => $data->currency ?? 'USD',
-                    'attributes' => json_encode($item['attributes']),
+                    'attributes' => $item['attributes'],
                 ]);
 
                 // 3. Create Inventory for that Variant
@@ -82,7 +82,7 @@ class ProductService
                         'price' => $item['price'],
                         'sale_price' => $item['sale_price'],
                         'currency' => $data->currency ?? 'USD',
-                        'attributes' => json_encode($item['attributes']),
+                        'attributes' => $item['attributes'],
                         'is_active' => true,
                     ]
                 );
