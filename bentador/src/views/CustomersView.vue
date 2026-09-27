@@ -385,7 +385,7 @@ onMounted(async () => {
           >
           <input
             type="text"
-            placeholder="John Doe"
+            placeholder="Customer name"
             class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-dark-border rounded-xl dark:text-white focus:ring-2 focus:ring-teal-500/20 outline-none transition"
           />
         </div>
@@ -395,7 +395,7 @@ onMounted(async () => {
           >
           <input
             type="email"
-            placeholder="john@example.com"
+            placeholder="name@email.com"
             class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-dark-border rounded-xl dark:text-white focus:ring-2 focus:ring-teal-500/20 outline-none transition"
           />
         </div>
@@ -448,7 +448,7 @@ onMounted(async () => {
           <input
             type="email"
             :value="selectedCustomer?.email"
-            class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-dark-border rounded-xl dark:text-white focus:ring-2 focus:ring-teal-500/20 outline-none"
+            class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-900 border border-gray-200 dark:border-dark-border rounded-xl dark:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700"
           />
         </div>
         <div class="grid grid-cols-2 gap-4">

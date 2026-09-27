@@ -206,7 +206,7 @@ Unauthorized (`401`):
 
 ```json
 {
-  "error": "Unauthorized"
+  "message": "The email or password is incorrect. Check both and try again."
 }
 ```
 

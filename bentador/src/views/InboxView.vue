@@ -16,6 +16,9 @@ import BaseModal from '@/components/common/BaseModal.vue'
 
 const uiStore = useUiStore()
 
+const avatarSrc = (name: string) =>
+  `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=${uiStore.avatarBackground}&color=fff`
+
 const mobileView = ref<'list' | 'chat'>('list')
 const composeModal = ref(false)
 
@@ -138,7 +141,7 @@ const selectChat = (chat: { name: string; msg: string; time: string; unread: boo
             </button>
             <div class="relative">
               <img
-                :src="`https://ui-avatars.com/api/?name=${activeChat.name}&background=0D9488&color=fff`"
+                :src="avatarSrc(activeChat.name)"
                 class="w-10 h-10 rounded-full"
                 alt="Active Chat Avatar"
               />
@@ -157,14 +160,16 @@ const selectChat = (chat: { name: string; msg: string; time: string; unread: boo
           </div>
           <div class="flex gap-1">
             <button
-              class="p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition"
+              class="inline-flex min-h-11 min-w-11 items-center justify-center text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition"
               type="button"
+              aria-label="Call"
             >
               <PhoneIcon class="w-4 h-4" />
             </button>
             <button
-              class="p-2 text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition"
+              class="inline-flex min-h-11 min-w-11 items-center justify-center text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-lg transition"
               type="button"
+              aria-label="More"
             >
               <EllipsisVerticalIcon class="w-4 h-4" />
             </button>
@@ -176,7 +181,7 @@ const selectChat = (chat: { name: string; msg: string; time: string; unread: boo
           <!-- Received -->
           <div class="flex items-end gap-3 max-w-[80%]">
             <img
-              :src="`https://ui-avatars.com/api/?name=${activeChat.name}&background=0D9488&color=fff`"
+              :src="avatarSrc(activeChat.name)"
               class="w-8 h-8 rounded-full"
               alt="Message Avatar"
             />
@@ -224,11 +229,12 @@ const selectChat = (chat: { name: string; msg: string; time: string; unread: boo
             <input
               type="text"
               placeholder="Type your reply..."
-              class="flex-1 bg-transparent border-none outline-none text-sm dark:text-white px-2"
+              class="min-h-11 flex-1 bg-transparent border-none text-sm dark:text-white px-2 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700"
             />
             <button
-              class="bg-teal-500 hover:bg-teal-600 text-white w-10 h-10 rounded-xl flex items-center justify-center transition-all active:scale-90 shadow-md shadow-teal-500/20"
+              class="inline-flex min-h-11 min-w-11 items-center justify-center bg-teal-700 hover:bg-teal-800 text-white rounded-xl transition-all shadow-md shadow-teal-500/20"
               type="button"
+              aria-label="Send reply"
             >
               <PaperAirplaneIcon class="w-5 h-5" />
             </button>

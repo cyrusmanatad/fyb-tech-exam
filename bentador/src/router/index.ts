@@ -152,7 +152,7 @@ router.beforeEach(async (to) => {
 })
 
 router.afterEach(async (to) => {
-  document.title = `Benta Door — ${to.meta.title ?? 'Dashboard'}`
+  document.title = `Benta Door: ${to.meta.title ?? 'Dashboard'}`
 })
 
 export default router

@@ -36,7 +36,7 @@ Avoid utility-class bloat: prefer layout primitives (`flex`, `grid`, `gap`) and 
 | Page background | `bg-[#F9FAFB]` / `dark:bg-dark-bg` |
 | Card surface | `bg-white` / `dark:bg-dark-card` |
 | Borders | `border-gray-100` / `dark:border-dark-border` |
-| Primary accent | Teal (`teal-500`, `teal-600`) |
+| Primary accent | Account Settings chooses Green (Tailwind teal) or Blue (`#ADE1FB`, `#266CA9`, `#0F2573`, `#041D56`, `#01082D`) |
 | Shadows | `shadow-sm` on cards; `shadow-teal-500/20` on primary CTAs |
 
 ---
@@ -46,6 +46,7 @@ Avoid utility-class bloat: prefer layout primitives (`flex`, `grid`, `gap`) and 
 - **Class-based** dark mode on `document.documentElement`.
 - Toggle via `useUiStore().toggleDarkMode()`.
 - Persist preference: `localStorage` key `darkMode`.
+- Color theme: `localStorage` key `colorTheme` (`green` or `blue`). Blue adds `theme-blue` on `document.documentElement`. Unset stays blue.
 - Token pairs:
   - Page: `dark:bg-dark-bg`
   - Cards/modals: `dark:bg-dark-card`
@@ -59,7 +60,7 @@ Account Settings exposes the same toggle for consistency with the sidebar menu.
 
 - Buttons: `:active:scale-95` and smooth `transition` on primary actions.
 - Hover states on nav links: `hover:bg-gray-50` / `dark:hover:bg-slate-800/50`.
-- Active route: `text-teal-600` / `dark:text-teal-400`, often with `font-bold`.
+- Active route: `text-teal-600` / `dark:text-teal-400` (those utilities follow the selected color theme), often with `font-bold`.
 - Toasts: bottom-right, `rounded-2xl`, used for save confirmations (profile, password).
 
 ---
@@ -98,7 +99,8 @@ Account Settings exposes the same toggle for consistency with the sidebar menu.
 ### Avatars
 
 - Generated via UI Avatars API:  
-  `https://ui-avatars.com/api/?name={encodedName}&background=0D9488&color=fff`
+  `https://ui-avatars.com/api/?name={encodedName}&background={0D9488|0F2573}&color=fff`
+- Background is `#0D9488` on Green and `#0F2573` on Blue.
 - Used in Sidebar, Profile Settings, and Order Entry header.
 
 ---
@@ -119,7 +121,7 @@ Account Settings exposes the same toggle for consistency with the sidebar menu.
 ### Settings pages (Profile & Account)
 
 - Max width `max-w-3xl mx-auto` for readable forms.
-- Section cards with icon headers (teal / orange / purple accents by topic).
+- Section cards with icon headers (blue, with orange and purple only where a topic already uses them).
 - Inline validation errors: `text-xs text-red-500` under fields.
 - Success: inline message + toast via `useToastStore`.
 
@@ -128,8 +130,8 @@ Account Settings exposes the same toggle for consistency with the sidebar menu.
 ## Brand
 
 - Product name: **Benta Door**
-- Document title pattern: `Benta Door — {page title}`
-- Logo mark: teal rounded square + grid icon (`Squares2X2Icon`)
+- Document title pattern: `Benta Door: {page title}`
+- Logo mark: rounded square in the active accent (`teal-500`) + grid icon (`Squares2X2Icon`)
 
 ---
 

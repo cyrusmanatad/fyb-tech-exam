@@ -13,7 +13,7 @@ const emit = defineEmits(['action'])
 
 <template>
   <div
-    class="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-teal-500 to-emerald-600 p-8 lg:p-12 mb-10 text-white shadow-2xl shadow-teal-500/20 group"
+    class="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-teal-500 to-teal-700 p-8 lg:p-12 mb-10 text-white shadow-2xl shadow-teal-500/20 group"
   >
     <div class="relative z-10 max-w-2xl text-center md:text-left">
       <span
@@ -25,7 +25,7 @@ const emit = defineEmits(['action'])
         class="text-4xl lg:text-6xl font-black mb-4 tracking-tighter leading-tight"
         v-html="title"
       ></h2>
-      <p class="text-teal-50 text-sm lg:text-base font-medium mb-8 max-w-md mx-auto md:mx-0">
+      <p class="text-white text-sm lg:text-base font-medium mb-8 max-w-md mx-auto md:mx-0">
         {{ description }}
       </p>
       <button

@@ -42,24 +42,6 @@ const emit = defineEmits<{
         </span>
       </div>
 
-      <!-- Add Button Overlay -->
-      <div
-        class="absolute inset-0 bg-teal-900/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]"
-      >
-        <button
-          type="button"
-          :disabled="product.stock === 0"
-          class="w-14 h-14 bg-white text-teal-600 rounded-2xl shadow-2xl flex items-center justify-center transition duration-300"
-          :class="
-            product.stock === 0
-              ? 'cursor-not-allowed opacity-50'
-              : 'hover:scale-110 active:scale-95'
-          "
-          @click.stop="emit('add-to-cart', product)"
-        >
-          <PlusIcon class="w-7 h-7" />
-        </button>
-      </div>
     </div>
 
     <div class="p-6 flex-1 flex flex-col">
@@ -96,6 +78,15 @@ const emit = defineEmits<{
           <p class="text-[9px] text-gray-400 font-bold">Fast Delivery</p>
         </div>
       </div>
+      <button
+        type="button"
+        :disabled="product.stock === 0"
+        class="mt-4 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-teal-700 px-4 text-sm font-bold text-white disabled:cursor-not-allowed disabled:bg-gray-200 disabled:text-gray-700"
+        @click.stop="emit('add-to-cart', product)"
+      >
+        <PlusIcon class="w-4 h-4" />
+        {{ product.stock === 0 ? 'Out of stock' : 'Add to cart' }}
+      </button>
     </div>
   </div>
 </template>

@@ -31,7 +31,7 @@ class WelcomeUserNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Welcome — Your Account Details')
+            ->subject('Welcome: Your Account Details')
             ->greeting("Hello {$notifiable->name}!")
             ->line('Your account has been created.')
             ->line('Here are your login credentials:')

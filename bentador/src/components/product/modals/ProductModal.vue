@@ -412,7 +412,7 @@ const submit = () => {
         class="space-y-6 transition-all duration-300 animate-in fade-in slide-in-from-bottom-2"
       >
         <div
-          class="bg-teal-50/50 dark:bg-teal-900/10 p-4 rounded-2xl border border-teal-100 dark:border-teal-900/30 flex gap-4"
+          class="bg-teal-50/50 dark:bg-teal-900/10 p-4 rounded-2xl border border-teal-500 dark:border-dark-border flex gap-4"
         >
           <SwatchIcon class="w-6 h-6 text-teal-600 dark:text-teal-400 shrink-0" />
           <div>

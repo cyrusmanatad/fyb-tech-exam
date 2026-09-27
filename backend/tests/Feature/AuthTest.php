@@ -105,9 +105,22 @@ class AuthTest extends TestCase
 
         $response = $this->postJson('/api/v1/auth/login', $credentials);
 
-        $response->assertStatus(401) // Unauthorized
-            ->assertJson([
-                'error' => 'Unauthorized',
+        $response->assertUnauthorized()
+            ->assertExactJson([
+                'message' => 'The email or password is incorrect. Check both and try again.',
+            ]);
+    }
+
+    public function test_unknown_email_gets_the_same_login_error(): void
+    {
+        $response = $this->postJson('/api/v1/auth/login', [
+            'email' => 'nobody@bentadoor.com',
+            'password' => 'wrong-password',
+        ]);
+
+        $response->assertUnauthorized()
+            ->assertExactJson([
+                'message' => 'The email or password is incorrect. Check both and try again.',
             ]);
     }
 }

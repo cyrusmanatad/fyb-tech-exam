@@ -30,7 +30,6 @@ const timeRangeOpen = ref(false)
 const exportModal = ref(false)
 
 const CHART_COLORS = [
-  '#0D9488',
   '#F97316',
   '#94A3B8',
   '#9413B0',
@@ -40,38 +39,48 @@ const CHART_COLORS = [
   '#EC4899',
 ]
 
+const chartPalette = computed(() => {
+  const lead =
+    uiStore.colorTheme === 'green'
+      ? '#0D9488'
+      : uiStore.isDarkMode
+        ? '#ADE1FB'
+        : '#266CA9'
+  return [lead, ...CHART_COLORS]
+})
+
 const kpis = computed(() => {
   const k = analyticsStore.kpi
 
   return [
     {
       label: 'Net Revenue',
-      val: k ? `₱${k.net_revenue.value}` : '—',
-      trend: k?.net_revenue.trend.label ?? '—',
+      val: k ? `₱${k.net_revenue.value}` : 'n/a',
+      trend: k?.net_revenue.trend.label ?? 'n/a',
       up: k?.net_revenue.trend.direction === 'up',
       icon: CurrencyDollarIcon,
       color: 'text-green-500',
     },
     {
       label: 'Conversion Rate',
-      val: k?.conversion_rate.value ?? '—',
-      trend: k?.conversion_rate.trend.label ?? '—',
+      val: k?.conversion_rate.value ?? 'n/a',
+      trend: k?.conversion_rate.trend.label ?? 'n/a',
       up: k?.conversion_rate.trend.direction === 'up',
       icon: ArrowTrendingUpIcon,
       color: 'text-green-500',
     },
     {
       label: 'Store Sessions',
-      val: k?.store_sessions.value ?? '—',
-      trend: k?.store_sessions.trend.label ?? '—',
+      val: k?.store_sessions.value ?? 'n/a',
+      trend: k?.store_sessions.trend.label ?? 'n/a',
       up: k?.store_sessions.trend.direction === 'up',
       icon: UsersIcon,
       color: 'text-red-500',
     },
     {
       label: 'Avg. Order Value',
-      val: k ? `₱${k.avg_order_value.value}` : '—',
-      trend: k?.avg_order_value.trend.label ?? '—',
+      val: k ? `₱${k.avg_order_value.value}` : 'n/a',
+      trend: k?.avg_order_value.trend.label ?? 'n/a',
       up: k?.avg_order_value.trend.direction === 'up',
       color: 'text-green-500',
       icon: ShoppingCartIcon,
@@ -94,7 +103,7 @@ const trafficSources = [
 const revenueChartOptions = computed<ApexOptions>(() => {
   const isDark = uiStore.isDarkMode
   const textColor = isDark ? '#94a3b8' : '#64748b'
-  const gridColor = isDark ? '#1e293b' : '#f1f5f9'
+  const gridColor = isDark ? (uiStore.colorTheme === 'blue' ? '#3175B0' : '#1e293b') : '#f1f5f9'
 
   return {
     chart: {
@@ -103,7 +112,7 @@ const revenueChartOptions = computed<ApexOptions>(() => {
       toolbar: { show: false },
       background: 'transparent',
     },
-    colors: ['#0D9488', '#cbd5e1'],
+    colors: [chartPalette.value[0] ?? '#0D9488', '#cbd5e1'],
     fill: {
       type: 'gradient',
       gradient: { shadeIntensity: 1, opacityFrom: 0.4, opacityTo: 0.05 },
@@ -156,7 +165,7 @@ const revenueSeries = computed(() => [
 const categoryChartOptions = computed<ApexOptions>(() => {
   const isDark = uiStore.isDarkMode
   const textColor = isDark ? '#94a3b8' : '#64748b'
-  const gridColor = isDark ? '#1e293b' : '#f1f5f9'
+  const gridColor = isDark ? (uiStore.colorTheme === 'blue' ? '#3175B0' : '#1e293b') : '#f1f5f9'
 
   return {
     chart: {
@@ -165,7 +174,7 @@ const categoryChartOptions = computed<ApexOptions>(() => {
       toolbar: { show: false },
       background: 'transparent',
     },
-    colors: CHART_COLORS,
+    colors: chartPalette.value,
     plotOptions: {
       bar: {
         horizontal: true,
@@ -367,12 +376,27 @@ onMounted(() => analyticsStore.fetchAll())
           Top Categories
         </h3>
 
-        <!-- Loading -->
-        <div v-if="analyticsStore.loading" class="h-[300px] flex items-center justify-center">
+        <div v-if="analyticsStore.loading" class="h-[300px] flex flex-col items-center justify-center gap-3">
           <div
             class="w-8 h-8 border-[3px] border-gray-200 dark:border-slate-700 border-t-teal-500 rounded-full animate-spin"
+            role="status"
           />
+          <p class="text-sm text-gray-600 dark:text-slate-400">Loading category sales</p>
         </div>
+
+        <p
+          v-else-if="analyticsStore.categoryError"
+          class="text-center text-sm text-gray-600 dark:text-slate-400 py-8"
+        >
+          {{ analyticsStore.categoryError }}
+        </p>
+
+        <p
+          v-else-if="!analyticsStore.categories?.categories?.length"
+          class="text-center text-sm text-gray-600 dark:text-slate-400 py-8"
+        >
+          No category sales yet. Record an order to see how revenue splits across categories.
+        </p>
 
         <template v-else>
           <VueApexCharts
@@ -382,7 +406,6 @@ onMounted(() => analyticsStore.fetchAll())
             :series="categorySeries"
           />
 
-          <!-- Dynamic category list -->
           <div class="mt-4 space-y-3">
             <div
               v-for="(cat, index) in analyticsStore.categories?.categories ?? []"
@@ -390,17 +413,16 @@ onMounted(() => analyticsStore.fetchAll())
               class="flex justify-between items-center text-xs"
             >
               <div class="flex items-center gap-2">
-                <!-- Color dot matching chart -->
                 <span
                   class="w-2 h-2 rounded-full flex-shrink-0"
-                  :style="{ backgroundColor: CHART_COLORS[index % CHART_COLORS.length] }"
+                  :style="{ backgroundColor: chartPalette[index % chartPalette.length] }"
                 />
                 <span class="text-gray-500 dark:text-slate-400 font-medium">
                   {{ cat.name }}
                 </span>
               </div>
               <div class="flex items-center gap-3">
-                <span class="text-gray-400 dark:text-slate-500 text-[10px]">
+                <span class="text-gray-600 dark:text-slate-400 text-[10px]">
                   {{ cat.total_orders }} orders
                 </span>
                 <span class="font-black text-gray-900 dark:text-white">
@@ -408,14 +430,6 @@ onMounted(() => analyticsStore.fetchAll())
                 </span>
               </div>
             </div>
-
-            <!-- Empty state -->
-            <p
-              v-if="!analyticsStore.categories?.categories?.length"
-              class="text-center text-xs text-gray-400 dark:text-slate-500 py-4"
-            >
-              No data available
-            </p>
           </div>
         </template>
       </div>

@@ -380,7 +380,7 @@ onMounted(async () => {
             <label class="block text-[10px] font-black text-gray-400 uppercase mb-1.5">Role</label>
             <select
               v-model="formData.role"
-              class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-900 border dark:border-dark-border rounded-xl text-sm dark:text-white outline-none"
+              class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-900 border dark:border-dark-border rounded-xl text-sm dark:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700"
             >
               <option v-for="role in roleStore.roles" :key="role.id" :value="role.name">
                 {{ role.name }}
@@ -395,7 +395,7 @@ onMounted(async () => {
               >Initial Status</label
             >
             <select
-              class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-900 border dark:border-dark-border rounded-xl text-sm dark:text-white outline-none"
+              class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-900 border dark:border-dark-border rounded-xl text-sm dark:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-700"
             >
               <option>Active</option>
               <option>Inactive</option>

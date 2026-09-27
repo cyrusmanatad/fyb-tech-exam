@@ -10,11 +10,13 @@ import {
 import AppHeader from '@/components/layouts/AppHeader.vue'
 import type { ActionItem } from '@/types/header-types'
 import { useAuthStore } from '@/stores/auth'
+import { useUiStore } from '@/stores/ui'
 import type { ProfileFormErrors } from '@/types/auth'
 import { useToastStore } from '@/stores/toast'
 import axios from 'axios'
 
 const auth = useAuthStore()
+const uiStore = useUiStore()
 const toastStore = useToastStore()
 const router = useRouter()
 
@@ -33,12 +35,12 @@ const formErrors = reactive<ProfileFormErrors>({
 
 const avatarUrl = computed(() => {
   const name = encodeURIComponent(form.name || auth.user?.name || 'User')
-  return `https://ui-avatars.com/api/?name=${name}&background=0D9488&color=fff&size=128`
+  return `https://ui-avatars.com/api/?name=${name}&background=${uiStore.avatarBackground}&color=fff&size=128`
 })
 
 const roleLabel = computed(() => auth.user?.roles[0] ?? 'User')
 const memberSince = computed(() => {
-  if (!auth.user?.created_at) return '—'
+  if (!auth.user?.created_at) return 'Not set'
   return new Date(auth.user.created_at).toLocaleDateString('en-US', {
     month: 'long',
     day: 'numeric',
