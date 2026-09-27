@@ -4,7 +4,6 @@ namespace Tests\Feature;
 
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
-use Illuminate\Support\Facades\Hash;
 use Tests\TestCase;
 
 class AuthTest extends TestCase
@@ -13,7 +12,7 @@ class AuthTest extends TestCase
 
     public function test_user_requires_email_when_registering()
     {
-        $response = $this->postJson('/api/auth/register', [
+        $response = $this->postJson('/api/v1/auth/register', [
             'name' => 'John'
         ]);
 
@@ -29,7 +28,7 @@ class AuthTest extends TestCase
             'password' => 'password',
         ];
 
-        $response = $this->postJson('/api/auth/register', $userData);
+        $response = $this->postJson('/api/v1/auth/register', $userData);
 
         $response->assertStatus(201)
             ->assertJsonStructure([
@@ -63,7 +62,7 @@ class AuthTest extends TestCase
             'password' => 'password',
         ];
 
-        $response = $this->postJson('/api/auth/register', $userData);
+        $response = $this->postJson('/api/v1/auth/register', $userData);
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['email']);
@@ -73,7 +72,7 @@ class AuthTest extends TestCase
     {
         $password = 'password';
         $user = User::factory()->create([
-            'password' => Hash::make($password),
+            'password' => $password,
         ]);
 
         $credentials = [
@@ -81,7 +80,7 @@ class AuthTest extends TestCase
             'password' => $password,
         ];
 
-        $response = $this->postJson('/api/auth/login', $credentials);
+        $response = $this->postJson('/api/v1/auth/login', $credentials);
 
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -96,7 +95,7 @@ class AuthTest extends TestCase
     public function test_user_cannot_login_with_invalid_credentials(): void
     {
         $user = User::factory()->create([
-            'password' => Hash::make('correct-password'),
+            'password' => 'correct-password',
         ]);
 
         $credentials = [
@@ -104,7 +103,7 @@ class AuthTest extends TestCase
             'password' => 'wrong-password',
         ];
 
-        $response = $this->postJson('/api/auth/login', $credentials);
+        $response = $this->postJson('/api/v1/auth/login', $credentials);
 
         $response->assertStatus(401) // Unauthorized
             ->assertJson([

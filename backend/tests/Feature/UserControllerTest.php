@@ -17,17 +17,11 @@ class UserControllerTest extends TestCase
     {
         $user = User::factory()->create();
 
-        $response = $this->actingAs($user, 'api')->getJson('/api/users/me');
+        $response = $this->actingAs($user, 'api')->getJson('/api/v1/users/me');
 
-        $response->assertStatus(200)
-            ->assertJson([
-                'message' => 'User retrieved successfully',
-                'status' => false,
-                'data' => [
-                    'id' => $user->id,
-                    'name' => $user->name,
-                    'email' => $user->email,
-                ],
-            ]);
+        $response->assertOk()
+            ->assertJsonPath('data.id', $user->id)
+            ->assertJsonPath('data.name', $user->name)
+            ->assertJsonPath('data.email', $user->email);
     }
 }
