@@ -11,7 +11,7 @@ uses(RefreshDatabase::class);
 uses(MakesHttpRequests::class);
 
 beforeEach(function () {
-    skip('Product API no longer uses the sku_code schema.');
+    $this->markTestSkipped('Product API no longer uses the sku_code schema.');
 });
 
 test('index returns products', function () {
