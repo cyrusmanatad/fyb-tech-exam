@@ -51,36 +51,21 @@ class AnalyticsController extends Controller
      */
     private function revenueByDay(Carbon $start, Carbon $end): array
     {
-        $orders = Order::query()
-            ->select(
-                DB::raw('DAYOFWEEK(created_at) as day_of_week'), // 1=Sun, 2=Mon...7=Sat
-                DB::raw('SUM(total) as revenue')
-            )
+        $totals = array_fill(0, 7, 0.0);
+
+        Order::query()
             ->whereBetween('created_at', [$start, $end])
             ->whereNotIn('status', [
                 OrderStatus::CANCELLED->value,
                 OrderStatus::REFUNDED->value,
             ])
-            ->groupBy('day_of_week')
-            ->pluck('revenue', 'day_of_week') // [2 => 1200, 3 => 800, ...]
-            ->toArray();
+            ->get(['created_at', 'total'])
+            ->each(function (Order $order) use (&$totals) {
+                $index = $order->created_at->dayOfWeekIso - 1;
+                $totals[$index] += (float) $order->total;
+            });
 
-        // Map to Mon-Sun (DAYOFWEEK: 1=Sun, 2=Mon, 3=Tue... 7=Sat)
-        // We want index 0=Mon, 1=Tue... 6=Sun
-        $dayMap = [
-            0 => 2, // Mon
-            1 => 3, // Tue
-            2 => 4, // Wed
-            3 => 5, // Thu
-            4 => 6, // Fri
-            5 => 7, // Sat
-            6 => 1, // Sun
-        ];
-
-        return array_map(
-            fn ($dayOfWeek) => round((float) ($orders[$dayOfWeek] ?? 0), 2),
-            $dayMap
-        );
+        return array_map(fn (float $total) => round($total, 2), $totals);
     }
 
     /**

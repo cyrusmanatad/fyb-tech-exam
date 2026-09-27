@@ -155,19 +155,41 @@ const revenueSeries = computed(() => [
 
 const categoryChartOptions = computed<ApexOptions>(() => {
   const isDark = uiStore.isDarkMode
+  const textColor = isDark ? '#94a3b8' : '#64748b'
+  const gridColor = isDark ? '#1e293b' : '#f1f5f9'
 
   return {
     chart: {
       height: 300,
-      type: 'donut',
+      type: 'bar',
+      toolbar: { show: false },
       background: 'transparent',
     },
-    // Dynamic labels from API
-    labels: analyticsStore.categories?.labels ?? [],
     colors: CHART_COLORS,
-    stroke: { show: false },
+    plotOptions: {
+      bar: {
+        horizontal: true,
+        borderRadius: 6,
+        barHeight: '60%',
+        distributed: true,
+      },
+    },
     dataLabels: { enabled: false },
     legend: { show: false },
+    grid: { borderColor: gridColor },
+    xaxis: {
+      categories: analyticsStore.categories?.labels ?? [],
+      labels: {
+        style: { colors: textColor },
+        formatter: (val: string) => {
+          const amount = Number(val)
+          return Number.isFinite(amount) ? amount.toLocaleString('en-PH') : val
+        },
+      },
+    },
+    yaxis: {
+      labels: { style: { colors: textColor } },
+    },
     tooltip: {
       y: {
         formatter: (val: number) =>
@@ -176,31 +198,16 @@ const categoryChartOptions = computed<ApexOptions>(() => {
           })}`,
       },
     },
-    plotOptions: {
-      pie: {
-        donut: {
-          size: '70%',
-          labels: {
-            show: true,
-            total: {
-              show: true,
-              label: 'Total',
-              color: isDark ? '#94a3b8' : '#64748b',
-              formatter: (w) => {
-                const total = w.globals.seriesTotals.reduce((a: number, b: number) => a + b, 0)
-                return `₱${total.toLocaleString('en-PH', { minimumFractionDigits: 2 })}`
-              },
-            },
-          },
-        },
-      },
-    },
     theme: { mode: isDark ? 'dark' : 'light' },
   }
 })
 
-// Dynamic series from API
-const categorySeries = computed(() => analyticsStore.categories?.series ?? [])
+const categorySeries = computed(() => [
+  {
+    name: 'Revenue',
+    data: analyticsStore.categories?.series ?? [],
+  },
+])
 
 const handleTimerange = (range: string) => {
   timeRange.value = range
@@ -369,7 +376,7 @@ onMounted(() => analyticsStore.fetchAll())
 
         <template v-else>
           <VueApexCharts
-            type="donut"
+            type="bar"
             height="300"
             :options="categoryChartOptions"
             :series="categorySeries"

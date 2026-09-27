@@ -80,6 +80,8 @@ class DatabaseSeeder extends Seeder
             }
         }
 
+        $this->call(OrderSeeder::class);
+
         // Forums + Comments
         Forum::factory(5)->hasComments(mt_rand(1, 5))->create();
 

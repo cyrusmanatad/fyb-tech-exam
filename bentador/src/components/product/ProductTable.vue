@@ -9,7 +9,6 @@ import {
   PencilSquareIcon,
   TrashIcon,
   FunnelIcon,
-  EyeIcon,
 } from '@heroicons/vue/24/outline'
 import Pagination from '../common/Pagination.vue'
 import { storeToRefs } from 'pinia'
@@ -411,22 +410,15 @@ onMounted(async () => {
               <td class="px-6 py-4 text-right">
                 <div class="flex items-center justify-end gap-2">
                   <button
-                    v-show="authStore.hasPermission(['edit all products', 'view products'])"
+                    v-if="authStore.hasPermission(['edit products'])"
                     @click="productStore.toggleModal('edit', true, product)"
                     class="p-2 hover:bg-teal-50 dark:hover:bg-teal-500/10 text-gray-400 dark:text-slate-500 hover:text-teal-600 dark:hover:text-teal-400 rounded-lg transition"
                     type="button"
                   >
-                    <PencilSquareIcon
-                      v-if="authStore.hasPermission(['edit all products'])"
-                      class="w-4 h-4"
-                    />
-                    <EyeIcon
-                      v-else-if="authStore.hasPermission(['view products'])"
-                      class="w-4 h-4"
-                    />
+                    <PencilSquareIcon class="w-4 h-4" />
                   </button>
                   <button
-                    v-show="authStore.hasPermission(['delete all products'])"
+                    v-if="authStore.hasPermission(['delete products'])"
                     @click="productStore.toggleModal('delete', true, product)"
                     class="p-2 hover:bg-red-50 dark:hover:bg-red-500/10 text-gray-400 dark:text-slate-500 hover:text-red-600 dark:hover:text-red-400 rounded-lg transition"
                     type="button"

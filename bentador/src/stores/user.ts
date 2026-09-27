@@ -93,6 +93,16 @@ export const useUserStore = defineStore('users', () => {
     }
   }
 
+  const updateStatus = async (userId: number, isActive: number) => {
+    isLoading.value = true
+    try {
+      const { data } = await axios.patch(`/api/v1/users/${userId}/status`, { is_active: isActive })
+      return data
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   return {
     users,
     roles,
@@ -103,6 +113,7 @@ export const useUserStore = defineStore('users', () => {
     fetchStatistics,
     fetchUsers,
     updateRole,
+    updateStatus,
     createUser,
     deleteUser,
   }

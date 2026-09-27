@@ -23,6 +23,17 @@ class OrderItem extends Model
         'attributes',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'attributes' => 'array',
+            'unit_price' => 'decimal:2',
+            'sale_price' => 'decimal:2',
+            'final_price' => 'decimal:2',
+            'subtotal' => 'decimal:2',
+        ];
+    }
+
     public function order(): BelongsTo
     {
         return $this->belongsTo(Order::class);

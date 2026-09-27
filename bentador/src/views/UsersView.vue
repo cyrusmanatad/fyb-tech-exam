@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref, watch } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { useUiStore } from '@/stores/ui'
 import {
   Bars3Icon,
@@ -20,11 +20,13 @@ import { useDebounceFn } from '@vueuse/core'
 import { storeToRefs } from 'pinia'
 import axios from 'axios'
 import { useRoleStore } from '@/stores/roleStore'
+import { useAuthStore } from '@/stores/auth'
 import { ROLES } from '@/types/enum'
 
 const uiStore = useUiStore()
 const userStore = useUserStore()
 const roleStore = useRoleStore()
+const authStore = useAuthStore()
 
 const addModal = ref(false)
 const editModal = ref(false)
@@ -32,6 +34,17 @@ const deleteModal = ref(false)
 
 const selectedUser = ref<User>()
 const selectedRole = ref<ROLES | null>(null)
+const selectedStatus = ref<'Active' | 'Inactive'>('Active')
+
+const canEditUserStatus = computed(() => {
+  const target = selectedUser.value
+  const current = authStore.user
+  if (!target || !current) return false
+  if (current.id === target.id) return false
+  if (authStore.hasRole(ROLES.SuperAdmin)) return true
+  if (target.roles.includes(ROLES.Admin) || target.roles.includes(ROLES.SuperAdmin)) return false
+  return authStore.hasPermission(['edit users'])
+})
 
 const formData = reactive<UserForm>({
   name: '',
@@ -69,6 +82,7 @@ const handleClose = () => {
 const handleEditUserModal = (user: User) => {
   selectedUser.value = user
   selectedRole.value = user.roles[0] || ROLES.Client
+  selectedStatus.value = user.status === 'Inactive' ? 'Inactive' : 'Active'
   editModal.value = true
 }
 
@@ -105,9 +119,15 @@ const handleCreateUser = async () => {
 }
 
 const handleUpdatePermissions = async () => {
-  console.log(selectedUser.value?.id || 0, selectedRole.value)
+  const userId = selectedUser.value?.id || 0
+  if (!userId) return
 
-  userStore.updateRole(selectedUser.value?.id || 0, selectedRole.value || ROLES.Client)
+  if (canEditUserStatus.value) {
+    const isActive = selectedStatus.value === 'Inactive' ? 0 : 1
+    await userStore.updateStatus(userId, isActive)
+  }
+
+  await userStore.updateRole(userId, selectedRole.value || ROLES.Client)
   editModal.value = false
 
   await Promise.all([userStore.fetchUsers(), userStore.fetchStatistics()])
@@ -415,14 +435,28 @@ onMounted(async () => {
           Modifying access for:
           <span class="text-gray-900 dark:text-white">{{ selectedUser?.name }}</span>
         </p>
-        <select
-          v-model="selectedRole"
-          class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-900 border dark:border-dark-border rounded-xl text-sm dark:text-white font-bold"
-        >
-          <option v-for="role in roleStore.roles" :key="role.id" :value="role.name">
-            {{ role.name }}
-          </option>
-        </select>
+        <div>
+          <label class="block text-[10px] font-black text-gray-400 uppercase mb-1.5">Role</label>
+          <select
+            v-model="selectedRole"
+            class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-900 border dark:border-dark-border rounded-xl text-sm dark:text-white font-bold"
+          >
+            <option v-for="role in roleStore.roles" :key="role.id" :value="role.name">
+              {{ role.name }}
+            </option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-[10px] font-black text-gray-400 uppercase mb-1.5">Status</label>
+          <select
+            v-model="selectedStatus"
+            :disabled="!canEditUserStatus"
+            class="w-full px-4 py-3 bg-gray-50 dark:bg-slate-900 border dark:border-dark-border rounded-xl text-sm dark:text-white font-bold disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            <option value="Active">Active</option>
+            <option value="Inactive">Inactive</option>
+          </select>
+        </div>
       </div>
       <div
         class="p-6 bg-gray-50 dark:bg-slate-800/20 border-t dark:border-dark-border flex justify-end gap-3 rounded-b-3xl"

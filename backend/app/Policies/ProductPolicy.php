@@ -36,17 +36,7 @@ class ProductPolicy
      */
     public function update(User $user, Product $product): bool
     {
-        if ($user->can('edit all products')) {
-
-            return true;
-        }
-
-        if ($user->can('edit own products')) {
-
-            return $user->id === $product->user_id;
-        }
-
-        return false;
+        return $user->can('edit products');
     }
 
     /**

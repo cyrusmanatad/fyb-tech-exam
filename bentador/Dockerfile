@@ -1,19 +1,21 @@
-# Build stage
-FROM node:20-bookworm-slim AS build
+# Local Compose targets this stage and mounts the source over /app.
+FROM node:20-bookworm-slim AS dev
 
-# Set working directory
 WORKDIR /app
 
-# Copy package files
 COPY package*.json ./
 
-# Install dependencies
 RUN npm install
 
-# Copy project files
 COPY . .
 
-# Build the application for production
+EXPOSE 3000
+
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "3000"]
+
+# Build stage
+FROM dev AS build
+
 RUN npm run build
 
 # Production stage
