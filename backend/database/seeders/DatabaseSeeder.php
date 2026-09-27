@@ -61,9 +61,10 @@ class DatabaseSeeder extends Seeder
                 $variant = ProductVariant::firstOrCreate(
                     [
                         'product_id' => $product->id,
-                        'attributes' => $attributesJson,
+                        'attributes_hash' => md5($attributesJson),
                     ],
                     [
+                        'attributes' => $attributes,
                         'sku' => $sku,
                         'uom' => fake()->randomElement(['pcs', 'box', 'kg', 'lt']),
                         'price' => fake()->randomFloat(2, 500, 1000),

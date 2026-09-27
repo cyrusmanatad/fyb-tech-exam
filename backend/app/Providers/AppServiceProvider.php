@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Auth\Events\Login;
 use App\Listeners\LogUserLogin;
 use App\Models\Product;
+use App\Models\User;
 use App\Observers\ProductVariantObserver;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
@@ -25,9 +26,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-         // Implicitly grant "super-admin" role all permission checks using can()
+         // Seeded role name is "Super Admin". Gate::before does not run for Spatie route middleware.
          Gate::before(function ($user, $ability) {
-             if ($user->hasRole('super-admin')) {
+             if ($user->hasRole(User::ROLE_SUPER_ADMIN)) {
                  return true;
              }
          });

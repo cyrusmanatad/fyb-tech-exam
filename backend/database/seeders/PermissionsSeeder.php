@@ -59,21 +59,21 @@ class PermissionsSeeder extends Seeder
         // $role1->givePermissionTo(['create products', 'view products', 'edit own products', 'delete own products', 'publish own products', 'unpublish own products']);
 
         // Access to inbox, customers, products
-        $role1 = Role::create(['name' => 'Support', 'description' => 'Support staff', 'guard_name' => $guardName]);
+        $role1 = Role::create(['name' => 'Support', 'desc' => 'Support staff', 'guard_name' => $guardName]);
         $role1->givePermissionTo(['view products', 'view customers', 'view orders']);
 
         // Manage products and stock
-        $role2 = Role::create(['name' => 'Inventory Staff', 'description' => 'Inventory staff', 'guard_name' => $guardName]);
+        $role2 = Role::create(['name' => 'Inventory Staff', 'desc' => 'Inventory staff', 'guard_name' => $guardName]);
         $role2->givePermissionTo(['create products', 'view products', 'edit products', 'delete products']);
 
         // Can manage shop items and orders
-        $role3 = Role::create(['name' => 'Admin', 'description' => 'System administrator', 'guard_name' => $guardName]);
+        $role3 = Role::create(['name' => User::ROLE_ADMIN, 'desc' => 'System administrator', 'guard_name' => $guardName]);
         $role3->givePermissionTo(['create products', 'view products', 'edit products', 'delete products', 'create orders', 'view orders', 'edit orders', 'delete orders']);
 
         // Full system access
-        $role4 = Role::create(['name' => 'Super Admin', 'description' => 'Super administrator', 'guard_name' => $guardName]);
-        $role4->givePermissionTo(['create products', 'view products', 'edit products', 'delete products', 'create orders', 'view orders', 'edit orders', 'delete orders', 'create customers', 'view customers', 'edit customers', 'delete customers', 'create analytics', 'view analytics', 'edit analytics', 'delete analytics', 'create users', 'view users', 'edit users', 'delete users', 'create roles-permission', 'view roles-permission', 'edit roles-permission', 'delete roles-permission']);
-        // gets all permissions via Gate::before rule; see AppServiceProvider
+        $role4 = Role::create(['name' => User::ROLE_SUPER_ADMIN, 'desc' => 'Super administrator', 'guard_name' => $guardName]);
+        $role4->givePermissionTo(Permission::all());
+        // Gate::before in AppServiceProvider also grants this role every ability.
         
         // Support
         $user = User::factory()->create([

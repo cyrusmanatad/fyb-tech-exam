@@ -15,17 +15,18 @@ class UserResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'          => $this->id,
-            'name'        => $this->name,
-            'email'       => $this->email,
-            'roles'       => $this->getRoleNames(),              // ['admin', 'support']
-            'permissions' => $this->getAllPermissions()
-                                  ->pluck('name'),               // ['edit products', ...]
-            'login' => $this->last_login_at?->diffForHumans() ?? "Long time ago.",
-            // 'last_login_ip' => $this->last_login_ip,
-            'status' => 'Active',
-            'color' => 'green',
-            'created_at'  => $this->created_at->toDateTimeString(),
+            'id'            => $this->id,
+            'name'          => $this->name,
+            'email'         => $this->email,
+            'roles'         => $this->getRoleNames(),
+            'permissions'   => $this->getAllPermissions()->pluck('name'),
+            'is_active'     => (bool) $this->is_active,
+            'last_login_at' => $this->last_login_at?->toDateTimeString(),
+            'last_login_ip' => $this->last_login_ip,
+            'login'         => $this->last_login_at?->diffForHumans() ?? 'Long time ago.',
+            'status'        => $this->is_active ? 'Active' : 'Inactive',
+            'color'         => $this->is_active ? 'green' : 'red',
+            'created_at'    => $this->created_at->toDateTimeString(),
         ];
     }
 }

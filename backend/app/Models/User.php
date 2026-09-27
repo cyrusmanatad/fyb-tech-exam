@@ -14,6 +14,10 @@ class User extends Authenticatable implements JWTSubject
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasRoles;
 
+    public const ROLE_SUPER_ADMIN = 'Super Admin';
+
+    public const ROLE_ADMIN = 'Admin';
+
     /**
      * The attributes that are mass assignable.
      *

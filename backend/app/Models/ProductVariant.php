@@ -23,10 +23,23 @@ class ProductVariant extends Model
     protected $casts = [
         'price' => 'decimal:2',
         'sale_price' => 'decimal:2',
-        'is_active' => 'boolean'
+        'is_active' => 'boolean',
+        'attributes' => 'array',
     ];
 
     protected $appends = ['humanize_datetime'];
+
+    protected static function booted(): void
+    {
+        static::saving(function (ProductVariant $variant) {
+            $attributes = $variant->attributes;
+            $encoded = is_string($attributes) || $attributes === null
+                ? $attributes
+                : json_encode($attributes);
+
+            $variant->attributes_hash = md5($encoded ?? '');
+        });
+    }
 
     public function product()
     {

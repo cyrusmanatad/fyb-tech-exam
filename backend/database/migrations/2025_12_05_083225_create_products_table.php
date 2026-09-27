@@ -44,7 +44,8 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
 
-            $table->string('attributes_hash')->storedAs('md5(attributes)');
+            // Set on save by ProductVariant. A generated md5() column is not portable.
+            $table->string('attributes_hash')->nullable();
             $table->unique(['product_id', 'attributes_hash']);
         });
 
