@@ -12,14 +12,13 @@ import {
   ShoppingCartIcon,
   ClipboardDocumentListIcon,
   TruckIcon,
-  ShoppingBagIcon,
   ArrowRightEndOnRectangleIcon,
   ChartBarIcon,
   UserIcon,
   Cog6ToothIcon,
 } from '@heroicons/vue/24/outline'
 
-const props = defineProps<{
+defineProps<{
   searchQuery: string
   sortBy: string
 }>()

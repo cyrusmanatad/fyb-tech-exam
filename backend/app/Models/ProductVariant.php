@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class ProductVariant extends Model
 {
     use HasFactory, SoftDeletes;
+
     protected $fillable = [
         'product_id',
         'sku',
@@ -51,7 +52,8 @@ class ProductVariant extends Model
         return $this->hasOne(Inventory::class, 'variant_id');
     }
 
-    public function getHumanizeDatetimeAttribute(){
+    public function getHumanizeDatetimeAttribute()
+    {
         return $this->created_at ? $this->created_at->diffForHumans() : null;
     }
 }

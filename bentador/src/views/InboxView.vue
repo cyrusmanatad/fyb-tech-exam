@@ -32,7 +32,7 @@ const chats = [
   { name: 'David Smith', msg: 'When will the Airpods be in stock?', time: 'Yesterday', unread: false }
 ]
 
-const selectChat = (chat: any) => {
+const selectChat = (chat: { name: string; msg: string; time: string; unread: boolean }) => {
   activeChat.value = { ...chat, status: 'Online', lastSeen: 'Active now' }
   mobileView.value = 'chat'
 }

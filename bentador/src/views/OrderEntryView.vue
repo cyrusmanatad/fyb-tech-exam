@@ -22,7 +22,6 @@ const toastStore = useToastStore()
 const isSidebarOpen = ref(false)
 const isQuickViewOpen = ref(false)
 const selectedProduct = ref<Product | null>(null)
-const isLogoutModalOpen = ref(false)
 
 // Filters
 const searchQuery = ref('')
@@ -127,7 +126,7 @@ onMounted(async () => {
         <HeroBanner
           title="Summer Tech Sale <br>Up to 50% Off"
           subtitle="Limited Time Offer"
-          description="Upgrade your digital lifestyle with our premium electronics and accessories. Get free shipping on all orders over &#8369 500."
+          description="Upgrade your digital lifestyle with our premium electronics and accessories. Get free shipping on all orders over &#8369; 500."
           button-text="Shop the Sale"
           @action="searchQuery = 'Electronics'"
         />

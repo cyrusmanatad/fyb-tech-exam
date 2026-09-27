@@ -79,9 +79,9 @@ export const useOrderStore = defineStore('order', () => {
 
       const { data } = await axios.post('/api/v1/orders', payload)
       return data
-    } catch (err: any) {
+    } catch (err: unknown) {
       // Laravel validation errors
-      if (err.response?.status === 422) {
+      if (axios.isAxiosError(err) && err.response?.status === 422) {
         errors.value = err.response.data.errors
       }
       throw err
@@ -98,7 +98,7 @@ export const useOrderStore = defineStore('order', () => {
     try {
       loading.value = true
 
-      const params: any = {
+      const params: Record<string, string | number | string[]> = {
         search: searchTerm,
         page,
       }

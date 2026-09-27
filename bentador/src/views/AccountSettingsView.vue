@@ -16,6 +16,7 @@ import { useAuthStore } from '@/stores/auth'
 import { useUiStore } from '@/stores/ui'
 import type { PasswordFormErrors } from '@/types/auth'
 import { useToastStore } from '@/stores/toast'
+import axios from 'axios'
 
 const auth = useAuthStore()
 const uiStore = useUiStore()
@@ -86,12 +87,13 @@ const handlePasswordSubmit = async () => {
     setTimeout(() => {
       saved.value = false
     }, 3000)
-  } catch (err: any) {
-    if (err.response?.status === 422) {
-      const errors = err.response.data.errors
+  } catch (err: unknown) {
+    if (axios.isAxiosError(err) && err.response?.status === 422) {
+      const errors = err.response.data.errors as Record<string, string[]>
       Object.keys(errors).forEach((key) => {
-        if (key in passwordErrors) {
-          passwordErrors[key as keyof PasswordFormErrors] = errors[key]
+        const messages = errors[key]
+        if (key in passwordErrors && messages) {
+          passwordErrors[key as keyof PasswordFormErrors] = messages
         }
       })
     } else {

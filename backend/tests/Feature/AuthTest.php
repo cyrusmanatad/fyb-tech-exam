@@ -13,11 +13,11 @@ class AuthTest extends TestCase
     public function test_user_requires_email_when_registering()
     {
         $response = $this->postJson('/api/v1/auth/register', [
-            'name' => 'John'
+            'name' => 'John',
         ]);
 
         $response->assertStatus(422)
-                ->assertJsonValidationErrors(['email']);
+            ->assertJsonValidationErrors(['email']);
     }
 
     public function test_user_can_register(): void

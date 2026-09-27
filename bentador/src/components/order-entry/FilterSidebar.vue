@@ -19,11 +19,6 @@ const emit = defineEmits<{
   (e: 'reset'): void
 }>()
 
-const handleCategoryChange = (cat: string, checked: boolean) => {
-  // const current = [...(arguments[0] as unknown as string[])] // This is just a placeholder logic
-  // Real logic below
-}
-
 const toggleCategory = (cat: string) => {
   const newCategories = props.selectedCategories.includes(cat)
     ? props.selectedCategories.filter((c) => c !== cat)

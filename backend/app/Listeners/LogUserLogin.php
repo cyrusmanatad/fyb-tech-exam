@@ -22,13 +22,13 @@ class LogUserLogin
         // update last login
         $event->user->update([
             'last_login_at' => now(),
-            'last_login_ip' => request()->ip()
+            'last_login_ip' => request()->ip(),
         ]);
 
         $event->user->logins()->create([
             // 'guard'        => $event->guard,
-            'ip_address'   => request()->ip(),
-            'user_agent'   => request()->userAgent(),
+            'ip_address' => request()->ip(),
+            'user_agent' => request()->userAgent(),
             'logged_in_at' => now(),
         ]);
     }

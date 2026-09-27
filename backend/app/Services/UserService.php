@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\Models\User;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class UserService
 {
@@ -16,9 +16,9 @@ class UserService
             $plainPassword = 'Password@1234';
 
             $user = User::create([
-                'name'              => $data['name'],
-                'email'             => $data['email'],
-                'password'          => Hash::make($plainPassword),
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => Hash::make($plainPassword),
                 'email_verified_at' => now(), // admin-created users are pre-verified
             ]);
 
@@ -26,7 +26,7 @@ class UserService
             $user->assignRole($data['role']);
 
             return [
-                'user'     => $user->fresh(),
+                'user' => $user->fresh(),
                 'password' => $plainPassword, // return plain for email notification
             ];
         });

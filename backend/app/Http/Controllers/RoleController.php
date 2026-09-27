@@ -2,8 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Spatie\Permission\Models\Role;
 use Illuminate\Http\Request;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
 {
@@ -16,16 +17,16 @@ class RoleController extends Controller
                 'users:id,name,email', // for avatars
             ])
             ->get()
-            ->map(fn($role) => [
-                'id'          => $role->id,
-                'name'        => $role->name,
+            ->map(fn ($role) => [
+                'id' => $role->id,
+                'name' => $role->name,
                 'description' => $role->desc,
-                'color'       => $role->color,
+                'color' => $role->color,
                 'users_count' => $role->users_count,
-                'users'       => $role->users->take(3)->map(fn($u) => [
-                    'id'    => $u->id,
-                    'name'  => $u->name,
-                    'avatar'=> "https://ui-avatars.com/api/?name={$u->name}&background=random&color=fff"
+                'users' => $role->users->take(3)->map(fn ($u) => [
+                    'id' => $u->id,
+                    'name' => $u->name,
+                    'avatar' => "https://ui-avatars.com/api/?name={$u->name}&background=random&color=fff",
                 ]),
                 'permissions' => $role->permissions->pluck('name'),
             ]);
@@ -36,15 +37,15 @@ class RoleController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'          => ['required', 'string', 'max:255', 'unique:roles,name'],
-            'description'   => ['required', 'string'],
-            'permissions'   => ['required', 'array'],
+            'name' => ['required', 'string', 'max:255', 'unique:roles,name'],
+            'description' => ['required', 'string'],
+            'permissions' => ['required', 'array'],
             'permissions.*' => ['string', 'exists:permissions,name'],
         ]);
 
         $role = Role::create([
-            'name'       => $request->name,
-            'desc'       => $request->description,
+            'name' => $request->name,
+            'desc' => $request->description,
             'guard_name' => 'api',
         ]);
 
@@ -52,21 +53,21 @@ class RoleController extends Controller
 
         return response()->json([
             'message' => 'Role created successfully',
-            'data'    => [
-                'id'          => $role->id,
-                'name'        => $role->name,
-                'guard_name'  => $role->guard_name,
+            'data' => [
+                'id' => $role->id,
+                'name' => $role->name,
+                'guard_name' => $role->guard_name,
                 'permissions' => $role->permissions->pluck('name'),
-            ]
+            ],
         ], 201);
     }
 
     public function update(Request $request, Role $role)
     {
         $request->validate([
-            'name'          => ['required', 'string', 'max:255'],
-            'description'   => ['required', 'string'],
-            'permissions'   => ['required', 'array'],
+            'name' => ['required', 'string', 'max:255'],
+            'description' => ['required', 'string'],
+            'permissions' => ['required', 'array'],
             'permissions.*' => ['string', 'exists:permissions,name'],
         ]);
 
@@ -78,11 +79,11 @@ class RoleController extends Controller
 
         return response()->json([
             'message' => 'Role updated successfully',
-            'data'    => [
-                'id'          => $role->id,
-                'name'        => $role->name,
+            'data' => [
+                'id' => $role->id,
+                'name' => $role->name,
                 'permissions' => $role->permissions->pluck('name'),
-            ]
+            ],
         ]);
     }
 
@@ -91,7 +92,7 @@ class RoleController extends Controller
         $role->delete();
 
         return response()->json([
-            'message' => 'Role deleted successfully'
+            'message' => 'Role deleted successfully',
         ]);
     }
 
@@ -103,9 +104,8 @@ class RoleController extends Controller
         //     ->map(fn($group) => $group->pluck('name'));
 
         // Return flat array of permission names
-        $permissions = \Spatie\Permission\Models\Permission::where('guard_name', 'api')
-        ->pluck('name'); // ['view products', 'edit products', ...]
-
+        $permissions = Permission::where('guard_name', 'api')
+            ->pluck('name'); // ['view products', 'edit products', ...]
 
         return response()->json(['data' => $permissions]);
     }

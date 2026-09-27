@@ -21,18 +21,18 @@ class CustomerController extends Controller
         if ($request->filled('search')) {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
-                $q->where('name',  'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
+                $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%");
             });
         }
 
         // Filter by status
         if ($request->filled('status')) {
-            match($request->status) {
-                'active'   => $query->where('is_active', true),
+            match ($request->status) {
+                'active' => $query->where('is_active', true),
                 'inactive' => $query->where('is_active', false),
-                'new'      => $query->where('created_at', '>=', now()->subDays(7)),
-                default    => null,
+                'new' => $query->where('created_at', '>=', now()->subDays(7)),
+                default => null,
             };
         }
 
@@ -78,11 +78,11 @@ class CustomerController extends Controller
         return response()->json([
             'data' => [
                 'total' => $totalCustomers,
-                'new'            => $newCustomers,
-                'active'         => $activeCustomers,
-                'retention'      => $retentionRate, // percentage e.g. 42.5
-                'retained'       => $retainedCustomers,  // raw count
-            ]
+                'new' => $newCustomers,
+                'active' => $activeCustomers,
+                'retention' => $retentionRate, // percentage e.g. 42.5
+                'retained' => $retainedCustomers,  // raw count
+            ],
         ]);
     }
 }

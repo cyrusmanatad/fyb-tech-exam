@@ -51,7 +51,7 @@ export const useUserStore = defineStore('users', () => {
   ) => {
     isLoading.value = true
 
-    const params: any = {
+    const params: Record<string, string | number | string[]> = {
       search: searchTerm,
       page,
     }

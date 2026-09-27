@@ -1,4 +1,10 @@
 <!-- components/AppPagination.vue -->
+<script lang="ts">
+export default {
+  name: 'AppPagination',
+}
+</script>
+
 <script setup lang="ts">
 import { computed } from 'vue'
 import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/vue/24/outline'

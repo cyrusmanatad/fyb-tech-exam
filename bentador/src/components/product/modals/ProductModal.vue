@@ -88,10 +88,10 @@ const generateVariants = () => {
     return
   }
 
-  const combinations = activeOptions.reduce(
+  const combinations = activeOptions.reduce<Record<string, string>[]>(
     (acc, opt) => {
-      const next: any[] = []
-      acc.forEach((a: any) => {
+      const next: Record<string, string>[] = []
+      acc.forEach((a) => {
         opt.values.forEach((v) => {
           next.push({ ...a, [opt.name]: v })
         })

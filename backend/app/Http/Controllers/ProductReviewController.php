@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ProductReview;
 use App\Http\Requests\StoreProductReviewRequest;
 use App\Http\Requests\UpdateProductReviewRequest;
+use App\Models\ProductReview;
 
 class ProductReviewController extends Controller
 {
@@ -14,6 +14,7 @@ class ProductReviewController extends Controller
     public function index()
     {
         $query = ProductReview::with('user')->orderByDesc('created_at');
+
         return $query->paginate(5);
     }
 

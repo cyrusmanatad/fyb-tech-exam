@@ -20,9 +20,9 @@ return new class extends Migration
 
             // hierarchy
             $table->foreignId('parent_id')
-                  ->nullable()
-                  ->constrained('categories')
-                  ->cascadeOnDelete();
+                ->nullable()
+                ->constrained('categories')
+                ->cascadeOnDelete();
 
             // optional optimization
             $table->string('path')->nullable(); // e.g. electronics/phones
@@ -40,12 +40,12 @@ return new class extends Migration
             $table->id();
 
             $table->foreignId('vendor_id')
-                  ->constrained('users')
-                  ->cascadeOnDelete();
+                ->constrained('users')
+                ->cascadeOnDelete();
 
             $table->foreignId('category_id')
-                  ->constrained()
-                  ->cascadeOnDelete();
+                ->constrained()
+                ->cascadeOnDelete();
 
             $table->unique(['vendor_id', 'category_id']);
         });

@@ -15,7 +15,7 @@ import { PaymentMethod } from '@/types/enum'
 
 const orderStore = useOrderStore()
 
-const props = defineProps<{
+defineProps<{
   show: boolean
 }>()
 

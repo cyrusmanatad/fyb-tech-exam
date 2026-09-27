@@ -6,7 +6,6 @@ use App\Models\Forum;
 use App\Models\ForumsComment;
 use App\Models\Inventory;
 use App\Models\Product;
-use App\Models\ProductReview;
 use App\Models\ProductVariant;
 use Illuminate\Database\Seeder;
 
@@ -53,9 +52,9 @@ class DatabaseSeeder extends Seeder
                 $usedCombinations[] = $attributesJson;
 
                 // Generate unique SKU
-                $sku = 'SKU-' . strtoupper($color[0])
-                    . ($includeSize ? '-' . strtoupper(str_replace('-', '', $size)) : '')
-                    . '-' . fake()->unique()->numberBetween(1000, 9999);
+                $sku = 'SKU-'.strtoupper($color[0])
+                    .($includeSize ? '-'.strtoupper(str_replace('-', '', $size)) : '')
+                    .'-'.fake()->unique()->numberBetween(1000, 9999);
 
                 // Create variant if it doesn't exist
                 $variant = ProductVariant::firstOrCreate(
@@ -80,7 +79,7 @@ class DatabaseSeeder extends Seeder
         }
 
         // Forums + Comments
-        Forum::factory(5)->hasComments(mt_rand(1,5))->create();
+        Forum::factory(5)->hasComments(mt_rand(1, 5))->create();
 
         // ForumsComment::factory()->count(10)->create();
     }

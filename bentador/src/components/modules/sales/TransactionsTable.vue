@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
-import { useAuthStore } from '@/stores/auth'
 import { useOrderStore } from '@/stores/transactions'
 import {
   MagnifyingGlassIcon,

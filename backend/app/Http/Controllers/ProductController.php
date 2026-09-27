@@ -14,30 +14,30 @@ use Illuminate\Support\Facades\Log;
 
 class ProductController extends Controller
 {
-    public function __construct(protected ProductService $productService){}
+    public function __construct(protected ProductService $productService) {}
+
     /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
         $query = Product::query()
-        ->select(['id','user_id','category_id','base_sku','title','description','slug', 'status', 'created_at'])
-        ->with([
-            'user:id,name,email',
-            'variants:id,product_id,sku,uom,price,sale_price,currency,attributes',
-            'variants.inventory:id,variant_id,stock_quantity,reserved_quantity',
-            'category:id,name'
-        ])
-        ->orderByDesc('created_at');
+            ->select(['id', 'user_id', 'category_id', 'base_sku', 'title', 'description', 'slug', 'status', 'created_at'])
+            ->with([
+                'user:id,name,email',
+                'variants:id,product_id,sku,uom,price,sale_price,currency,attributes',
+                'variants.inventory:id,variant_id,stock_quantity,reserved_quantity',
+                'category:id,name',
+            ])
+            ->orderByDesc('created_at');
 
-        
-        if($request->filled('status')){
+        if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
 
-        if($request->filled('category')){
+        if ($request->filled('category')) {
             $categories = $request->category;
-            $query->whereHas('category', function($q) use($categories) {
+            $query->whereHas('category', function ($q) use ($categories) {
                 $q->whereIn('id', $categories);
             });
         }
@@ -47,11 +47,11 @@ class ProductController extends Controller
 
             $query->where(function ($q) use ($search) {
                 $q->where('slug', 'like', "%{$search}%")
-                ->orWhere('title', 'like', "%{$search}%")
-                ->orWhereHas("variants", function ($q2) use ($search) {
-                    $q2->where('sku', 'like', "%{$search}%")
-                    ->orWhere('uom', 'like', "%{$search}%");
-                });
+                    ->orWhere('title', 'like', "%{$search}%")
+                    ->orWhereHas('variants', function ($q2) use ($search) {
+                        $q2->where('sku', 'like', "%{$search}%")
+                            ->orWhere('uom', 'like', "%{$search}%");
+                    });
             });
         }
 
@@ -80,16 +80,16 @@ class ProductController extends Controller
 
         try {
             $product = $this->productService->create($dto);
-            
+
             return response()->json([
-                "message" => "Product created successfully",
-                "data" => $product
+                'message' => 'Product created successfully',
+                'data' => $product,
             ], 201);
         } catch (\Throwable $th) {
             Log::error($th);
 
             return response()->json([
-                "message" => "Failed to create product",
+                'message' => 'Failed to create product',
             ], 500);
         }
     }
@@ -122,18 +122,18 @@ class ProductController extends Controller
                 $request->validated(),
                 Auth::id()
             );
-    
+
             $product = $this->productService->update($product, $dto);
-            
+
             return response()->json([
-                "message" => "Product updated successfully",
-                "data" => $product
+                'message' => 'Product updated successfully',
+                'data' => $product,
             ]);
         } catch (\Throwable $th) {
             Log::error($th);
 
             return response()->json([
-                "message" => "Failed to update product",
+                'message' => 'Failed to update product',
             ], 500);
         }
     }
@@ -146,8 +146,7 @@ class ProductController extends Controller
         $this->productService->delete($product);
 
         return response()->json([
-            'message' => 'Product deleted successfully'
+            'message' => 'Product deleted successfully',
         ]);
     }
-
 }

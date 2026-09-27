@@ -5,8 +5,8 @@ namespace App\DTOs;
 class OrderItemData
 {
     public function __construct(
-        public readonly int    $variant_id,
-        public readonly int    $quantity,
+        public readonly int $variant_id,
+        public readonly int $quantity,
         public readonly string $price_type,
     ) {}
 
@@ -14,7 +14,7 @@ class OrderItemData
     {
         return new self(
             variant_id: $item['variant_id'],
-            quantity:   $item['quantity'],
+            quantity: $item['quantity'],
             price_type: $item['price_type'],
         );
     }

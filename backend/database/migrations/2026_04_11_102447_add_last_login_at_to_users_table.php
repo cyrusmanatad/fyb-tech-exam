@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->timestamp('last_login_at')->nullable()->after('remember_token');
-            $table->string('last_login_ip')->nullable()->after('last_login_at'); 
+            $table->string('last_login_ip')->nullable()->after('last_login_at');
         });
     }
 

@@ -2,7 +2,6 @@ import type {
   Pagination,
   Product,
   ProductForm,
-  ProductOption,
   Stat,
   Status,
   VariantInput,
@@ -12,7 +11,7 @@ import { ref } from 'vue'
 import axios from '@/utils/axios' // axios.js file
 import { ProductStatus, ProductStatusLabel } from '@/types/enum'
 import { useFormatter } from '@/composables/useFormatter'
-const { formatNumber, formatCurrency, formatStock } = useFormatter()
+const { formatStock } = useFormatter()
 
 export const useProductStore = defineStore('products', () => {
   const products = ref<Product[]>([])
@@ -70,7 +69,7 @@ export const useProductStore = defineStore('products', () => {
     try {
       isLoading.value = true
 
-      const [total] = await Promise.all([axios.get(`/api/v1/inventory/total`)])
+      const total = await axios.get(`/api/v1/inventory/total`)
 
       const { data } = total.data
 
@@ -109,7 +108,7 @@ export const useProductStore = defineStore('products', () => {
     try {
       isLoading.value = true
 
-      const params: any = {
+      const params: Record<string, string | number | string[]> = {
         search: searchTerm,
         page,
       }
@@ -149,7 +148,8 @@ export const useProductStore = defineStore('products', () => {
 
       await fetchProducts(search.value) // Will use current search and page
       toggleModal('edit', false)
-    } catch (error) {
+    } catch {
+      // Leave the modal open so the user can retry.
     } finally {
       isLoading.value = false
     }

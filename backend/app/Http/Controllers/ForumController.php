@@ -2,21 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Forum;
 use App\Http\Requests\StoreForumRequest;
 use App\Http\Requests\UpdateForumRequest;
+use App\Models\Forum;
 use App\Services\ForumService;
 
 class ForumController extends Controller
 {
-    public function __construct(protected ForumService $forumService){}
+    public function __construct(protected ForumService $forumService) {}
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $query = Forum::with(['user','comments.user'])->orderByDesc('created_at');
-        
+        $query = Forum::with(['user', 'comments.user'])->orderByDesc('created_at');
+
         return $query->paginate(10);
     }
 
@@ -37,7 +38,7 @@ class ForumController extends Controller
 
         return response()->json([
             'message' => 'Forum created successfully',
-            'data' => $forum
+            'data' => $forum,
         ], 201);
     }
 

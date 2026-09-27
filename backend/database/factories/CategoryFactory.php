@@ -2,10 +2,11 @@
 
 namespace Database\Factories;
 
+use App\Models\Category;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Category>
+ * @extends Factory<Category>
  */
 class CategoryFactory extends Factory
 {
@@ -17,12 +18,12 @@ class CategoryFactory extends Factory
     public function definition(): array
     {
         return [
-        'name' => $this->faker->words(2, true),
-        'slug' => $this->faker->slug(),
-        'path' => $this->faker->slug(),
-        'level' => mt_rand(1,5),
-        'is_active' => 1,
-        'sort_order' => mt_rand(1,20),
+            'name' => $this->faker->words(2, true),
+            'slug' => $this->faker->slug(),
+            'path' => $this->faker->slug(),
+            'level' => mt_rand(1, 5),
+            'is_active' => 1,
+            'sort_order' => mt_rand(1, 20),
         ];
     }
 }
