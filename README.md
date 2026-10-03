@@ -1,4 +1,4 @@
-# FYB Exam - Product Management UI and API's
+# Product Management UI and API's
 
 A full-stack web application built with Laravel (API backend) and Vue.js (SPA frontend).
 
